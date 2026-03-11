@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vertiljivenson9/lakaytv/main/public/logo.svg">
-    <img src="https://raw.githubusercontent.com/vertiljivenson9/lakaytv/main/public/logo.svg" alt="LakayTV Logo" width="120" height="120">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vertiljivenson9/LakayTv/main/public/logo.svg">
+    <img src="https://raw.githubusercontent.com/vertiljivenson9/LakayTv/main/public/logo.svg" alt="LakayTV Logo" width="120" height="120">
   </picture>
 </p>
 
@@ -53,8 +53,8 @@ Le cinéma haïtien manque de visibilité sur les plateformes internationales. L
 
 ```bash
 # Cloner le repository
-git clone https://github.com/vertiljivenson9/lakaytv.git
-cd lakaytv
+git clone https://github.com/vertiljivenson9/LakayTv.git
+cd LakayTv
 
 # Installer les dépendances
 bun install
@@ -119,7 +119,7 @@ bunx wrangler pages deploy .vercel/output/static
 ### Structure du projet
 
 ```
-lakaytv/
+LakayTv/
 ├── public/
 │   └── logo.svg           # Logo LakayTV
 ├── src/
@@ -127,7 +127,11 @@ lakaytv/
 │   │   ├── page.tsx       # Page d'accueil
 │   │   ├── layout.tsx     # Layout principal
 │   │   ├── sign-in/       # Page de connexion
-│   │   └── sign-up/       # Page d'inscription
+│   │   ├── sign-up/       # Page d'inscription
+│   │   ├── watch/         # Lecteur vidéo
+│   │   ├── producer/      # Panel producteur
+│   │   ├── admin/         # Panel admin
+│   │   └── api/           # API routes
 │   ├── components/
 │   │   └── ui/            # Composants shadcn/ui
 │   └── lib/
@@ -147,7 +151,9 @@ lakaytv/
 |---------------|------|-------------|
 | Page d'accueil | ✅ | Catalogue avec films tendance |
 | Authentification | ✅ | Clerk avec Google/Microsoft |
-| Lecteur vidéo | ✅ | YouTube embed natif |
+| Lecteur vidéo | ✅ | YouTube embed natif avec contrôles personnalisés |
+| Panel Producteur | ✅ | Gestion de contenu |
+| Panel Admin | ✅ | Modération |
 | Design responsive | ✅ | Mobile-first |
 | Interface FR | ✅ | Français par défaut |
 | Dark theme | ✅ | Thème sombre premium |
@@ -156,8 +162,6 @@ lakaytv/
 
 | Fonctionnalité | État | Description |
 |---------------|------|-------------|
-| Panel Producteur | 🚧 | Gestion de contenu |
-| Panel Admin | 🚧 | Modération |
 | Paiements | 📋 | HTG, USD, EUR |
 | Souscriptions | 📋 | Plans mensuels |
 | Stockage Telegram | 📋 | Alternative à YouTube |
@@ -179,8 +183,8 @@ lakaytv/
 - [x] Authentification Clerk
 - [x] Catalogue de démonstration
 - [x] Lecteur YouTube intégré
-- [ ] Panel producteur basique
-- [ ] Panel administrateur basique
+- [x] Panel producteur basique
+- [x] Panel administrateur basique
 
 ### Phase 2: MVP
 
@@ -241,8 +245,8 @@ Nous accueillons les contributions! Voici comment participer:
 
 ```bash
 # Fork sur GitHub, puis:
-git clone https://github.com/VOTRE_USERNAME/lakaytv.git
-cd lakaytv
+git clone https://github.com/VOTRE_USERNAME/LakayTv.git
+cd LakayTv
 bun install
 ```
 
@@ -310,7 +314,7 @@ LakayTV maintient des standards élevés:
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/vertiljivenson9/lakaytv/issues)
+- **Issues**: [GitHub Issues](https://github.com/vertiljivenson9/LakayTv/issues)
 - **Email**: support@lakaytv.com
 
 ---
