@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { db } from '@/lib/db';
+
+// Required for Cloudflare Pages
+export const runtime = 'edge';
 
 // GET - Obtener contenido aprobado para el catálogo público
 export async function GET(request: NextRequest) {

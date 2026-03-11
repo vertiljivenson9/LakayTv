@@ -1,12 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // Sin output estático - usamos @cloudflare/next-on-pages
+  
   typescript: {
     ignoreBuildErrors: true,
   },
+  
   reactStrictMode: false,
+  
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

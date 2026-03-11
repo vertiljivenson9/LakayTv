@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { db } from '@/lib/db';
+
+// Required for Cloudflare Pages
+export const runtime = 'edge';
 
 // GET - Obtener contenido
 export async function GET(request: NextRequest) {
@@ -18,7 +21,7 @@ export async function GET(request: NextRequest) {
       where.type = type;
     }
 
-    const contents = await prisma.content.findMany({
+    const contents = await db.content.findMany({
       where,
       include: {
         producer: {
@@ -83,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Crear contenido
-    const content = await prisma.content.create({
+    const content = await db.content.create({
       data: {
         title,
         description: description || null,
@@ -123,7 +126,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const content = await prisma.content.update({
+    const content = await db.content.update({
       where: { id },
       data: { status: status as 'PENDING' | 'APPROVED' | 'REJECTED' }
     });
@@ -151,7 +154,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.content.delete({ where: { id } });
+    await db.content.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting:', error);

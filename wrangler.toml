@@ -1,0 +1,12 @@
+# Configuración de Cloudflare Pages para LakayTV
+name = "lakaytv"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Configuración de Pages
+pages_build_output_dir = ".vercel/output/static"
+
+# Variables de entorno (configurar en el dashboard de Cloudflare)
+# [vars]
+# NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "tu_clave_publica"
+# CLERK_SECRET_KEY = "tu_clave_secreta"
