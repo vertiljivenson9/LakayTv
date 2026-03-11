@@ -1,141 +1,336 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vertiljivenson9/lakaytv/main/public/logo.svg">
+    <img src="https://raw.githubusercontent.com/vertiljivenson9/lakaytv/main/public/logo.svg" alt="LakayTV Logo" width="120" height="120">
+  </picture>
+</p>
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+<h1 align="center">LakayTV</h1>
 
-## ✨ Technology Stack
+<p align="center">
+  <strong>Plateforme de Streaming pour Contenu Haïtien</strong>
+</p>
 
-This scaffold provides a robust foundation built with:
+<p align="center">
+  Films • Séries • Bandes-annonces en Français et Créole
+</p>
 
-### 🎯 Core Framework
-- **⚡ Next.js 16** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
-
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
-
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
-
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Fetch** - Promise-based HTTP request
-
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
-
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
-
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
-
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
-
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-bun install
-
-# Start development server
-bun run dev
-
-# Build for production
-bun run build
-
-# Start production server
-bun start
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
-
-## 🤖 Powered by Z.ai
-
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
-
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
-
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
-
-## 📁 Project Structure
-
-```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
-```
-
-## 🎨 Available Features & Components
-
-This scaffold includes a comprehensive set of modern web development tools:
-
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
-
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
-
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
-
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Fetch + TanStack Query
-- **State Management**: Simple and scalable with Zustand
-
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
-
-## 🤝 Get Started with Z.ai
-
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+<p align="center">
+  <a href="#-installation">Installation</a> •
+  <a href="#-configuration">Configuration</a> •
+  <a href="#-fonctionnalités">Fonctionnalités</a> •
+  <a href="#-roadmap">Roadmap</a> •
+  <a href="#-contribution">Contribution</a>
+</p>
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+## À propos
+
+LakayTV est une plateforme de streaming dédiée au contenu haïtien. "Lakay" signifie "maison" en créole haïtien, reflétant notre mission de créer un espace où le cinéma haïtien trouve sa maison.
+
+### Pourquoi LakayTV?
+
+Le cinéma haïtien manque de visibilité sur les plateformes internationales. LakayTV comble ce vide en offrant une plateforme spécialisée qui:
+
+- Met en valeur les créateurs haïtiens
+- Offre une qualité Full HD minimale (1080p)
+- Supporte le français et le créole
+- Garantit 70% des revenus aux producteurs
+
+---
+
+## Installation
+
+### Prérequis
+
+- Node.js 18+
+- Bun (recommandé) ou npm
+- Compte Clerk (gratuit)
+- Compte Cloudflare (pour le déploiement)
+
+### Étapes
+
+```bash
+# Cloner le repository
+git clone https://github.com/vertiljivenson9/lakaytv.git
+cd lakaytv
+
+# Installer les dépendances
+bun install
+
+# Configurer les variables d'environnement
+cp .env.example .env.local
+```
+
+### Variables d'environnement
+
+Créez un fichier `.env.local` avec:
+
+```env
+# Base de données
+DATABASE_URL="file:./db/custom.db"
+
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=votre_cle_publique
+CLERK_SECRET_KEY=votre_cle_secrete
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+```
+
+### Démarrer le projet
+
+```bash
+# Initialiser la base de données
+bun run db:push
+
+# Lancer en développement
+bun run dev
+```
+
+Ouvrez [http://localhost:3000](http://localhost:3000)
+
+---
+
+## Configuration
+
+### 1. Configurer Clerk
+
+1. Créez un compte sur [clerk.com](https://clerk.com)
+2. Créez une nouvelle application
+3. Activez les providers: Email, Google, Microsoft
+4. Copiez les clés dans `.env.local`
+
+### 2. Configurer pour Cloudflare Pages
+
+```bash
+# Installer le package Cloudflare
+bun add -D @cloudflare/next-on-pages
+
+# Construire pour Cloudflare
+bunx @cloudflare/next-on-pages
+
+# Déployer
+bunx wrangler pages deploy .vercel/output/static
+```
+
+### Structure du projet
+
+```
+lakaytv/
+├── public/
+│   └── logo.svg           # Logo LakayTV
+├── src/
+│   ├── app/
+│   │   ├── page.tsx       # Page d'accueil
+│   │   ├── layout.tsx     # Layout principal
+│   │   ├── sign-in/       # Page de connexion
+│   │   └── sign-up/       # Page d'inscription
+│   ├── components/
+│   │   └── ui/            # Composants shadcn/ui
+│   └── lib/
+│       └── db.ts          # Client Prisma
+├── prisma/
+│   └── schema.prisma      # Schéma de base de données
+└── README.md
+```
+
+---
+
+## Fonctionnalités
+
+### Actuellement disponible
+
+| Fonctionnalité | État | Description |
+|---------------|------|-------------|
+| Page d'accueil | ✅ | Catalogue avec films tendance |
+| Authentification | ✅ | Clerk avec Google/Microsoft |
+| Lecteur vidéo | ✅ | YouTube embed natif |
+| Design responsive | ✅ | Mobile-first |
+| Interface FR | ✅ | Français par défaut |
+| Dark theme | ✅ | Thème sombre premium |
+
+### En développement
+
+| Fonctionnalité | État | Description |
+|---------------|------|-------------|
+| Panel Producteur | 🚧 | Gestion de contenu |
+| Panel Admin | 🚧 | Modération |
+| Paiements | 📋 | HTG, USD, EUR |
+| Souscriptions | 📋 | Plans mensuels |
+| Stockage Telegram | 📋 | Alternative à YouTube |
+| Statistiques | 📋 | Analytics producteurs |
+
+### Légende
+
+- ✅ Disponible
+- 🚧 En développement
+- 📋 Planifié
+
+---
+
+## Roadmap
+
+### Phase 1: Prototype (Actuel)
+
+- [x] Interface utilisateur streaming
+- [x] Authentification Clerk
+- [x] Catalogue de démonstration
+- [x] Lecteur YouTube intégré
+- [ ] Panel producteur basique
+- [ ] Panel administrateur basique
+
+### Phase 2: MVP
+
+- [ ] Paiements multi-devises
+- [ ] Système de souscription
+- [ ] Upload de contenu
+- [ ] Modération admin
+- [ ] Statistiques producteurs
+
+### Phase 3: Production
+
+- [ ] Stockage Telegram/CDN
+- [ ] DRM protection
+- [ ] Application mobile
+- [ ] API publique
+- [ ] Analytics avancés
+
+---
+
+## Architecture
+
+### Stack Technique
+
+| Couche | Technologie |
+|--------|-------------|
+| Frontend | Next.js 15, React 19 |
+| Styling | Tailwind CSS, shadcn/ui |
+| Auth | Clerk |
+| Database | Prisma, SQLite |
+| Déploiement | Cloudflare Pages |
+
+### Modèle de données
+
+```
+User ──┬── Subscription
+       ├── WatchHistory
+       ├── Favorites
+       └── Content (si producteur)
+
+Content ──┬── Season ─── Episode
+          └── Genre
+```
+
+### Modèle économique
+
+| Acteur | Part |
+|--------|------|
+| Producteur | 70% |
+| Plateforme | 30% |
+
+---
+
+## Contribution
+
+Nous accueillons les contributions! Voici comment participer:
+
+### 1. Fork et Clone
+
+```bash
+# Fork sur GitHub, puis:
+git clone https://github.com/VOTRE_USERNAME/lakaytv.git
+cd lakaytv
+bun install
+```
+
+### 2. Créer une branche
+
+```bash
+git checkout -b feature/nouvelle-fonctionnalite
+```
+
+### 3. Développer
+
+- Suivez la structure du projet
+- Utilisez les composants shadcn/ui existants
+- Commentez votre code en français ou anglais
+- Testez sur mobile et desktop
+
+### 4. Commit et Push
+
+```bash
+git add .
+git commit -m "feat: description de la fonctionnalité"
+git push origin feature/nouvelle-fonctionnalite
+```
+
+### 5. Pull Request
+
+- Décrivez les changements
+- Référencez les issues liées
+- Attendez la revue
+
+### Conventions de commit
+
+| Type | Description |
+|------|-------------|
+| `feat` | Nouvelle fonctionnalité |
+| `fix` | Correction de bug |
+| `docs` | Documentation |
+| `style` | Formatage |
+| `refactor` | Refactoring |
+| `test` | Tests |
+
+---
+
+## Qualité Vidéo
+
+LakayTV maintient des standards élevés:
+
+| Critère | Exigence |
+|---------|----------|
+| Résolution minimale | 1080p (Full HD) |
+| Résolution rejetée | 480p ou moins |
+| Formats acceptés | MP4, MOV, MKV |
+| Langues | Français, Créole, Bilingue |
+
+---
+
+## Sécurité
+
+- Authentification via Clerk (OAuth 2.0)
+- Middleware de protection des routes
+- Variables d'environnement sécurisées
+- Pas de stockage de mots de passe
+
+---
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/vertiljivenson9/lakaytv/issues)
+- **Email**: support@lakaytv.com
+
+---
+
+## Licence
+
+MIT License - Voir [LICENSE](LICENSE) pour plus de détails.
+
+---
+
+## Équipe
+
+Développé avec passion pour le cinéma haïtien.
+
+---
+
+<p align="center">
+  <strong>LakayTV</strong> - La maison du cinéma haïtien
+</p>
+
+<p align="center">
+  <a href="https://lakaytv.com">lakaytv.com</a>
+</p>
