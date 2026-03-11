@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -19,21 +18,36 @@ export const metadata: Metadata = {
   },
 };
 
+// Clerk provider condicional - solo usa Clerk si las variables están configuradas
+async function ClerkProviderWrapper({ children }: { children: React.ReactNode }) {
+  // Verificar si Clerk está configurado
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  
+  if (clerkKey && clerkKey.length > 10) {
+    // Clerk está configurado - usar provider real
+    const { ClerkProvider } = await import("@clerk/nextjs");
+    return <ClerkProvider>{children}</ClerkProvider>;
+  }
+  
+  // Clerk no está configurado - renderizar sin provider
+  return <>{children}</>;
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="fr" suppressHydrationWarning>
-        <body
-          className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
-        >
+    <html lang="fr" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
+      >
+        <ClerkProviderWrapper>
           {children}
-          <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProviderWrapper>
+        <Toaster />
+      </body>
+    </html>
   );
 }

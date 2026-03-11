@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from "react";
-import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
+// Nota: La autenticación con Clerk se habilita configurando las variables de entorno
+// Por ahora, mostramos botones simples que redirigen a las páginas de auth
 
 // ============ SVG ICONS ============
 const PlayIcon = () => (
@@ -482,7 +484,6 @@ function ContentCard({ content, showRank = false, rank }: ContentCardProps) {
 
 // ============ MAIN PAGE ============
 export default function Home() {
-  const { isSignedIn } = useUser();
   const [activeGenre, setActiveGenre] = useState("Tous");
 
   return (
@@ -517,22 +518,17 @@ export default function Home() {
                 <SearchIcon />
               </button>
 
-              {isSignedIn ? (
-                <UserButton afterSignOutUrl="/" />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <SignInButton mode="redirect">
-                    <Button variant="ghost" className="text-stone-300 hover:text-white hover:bg-white/10">
-                      Connexion
-                    </Button>
-                  </SignInButton>
-                  <SignUpButton mode="redirect">
-                    <Button className="bg-amber-600 hover:bg-amber-700 text-white">
-                      S&apos;inscrire
-                    </Button>
-                  </SignUpButton>
-                </div>
-              )}
+              {/* Botones de autenticación - funcionalidad completa cuando Clerk esté configurado */}
+              <Link href="/sign-in">
+                <Button variant="ghost" className="text-stone-300 hover:text-white hover:bg-white/10">
+                  Connexion
+                </Button>
+              </Link>
+              <Link href="/sign-up">
+                <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                  S&apos;inscrire
+                </Button>
+              </Link>
 
               <Button variant="ghost" className="lg:hidden text-white p-2">
                 <MenuIcon />

@@ -4,7 +4,9 @@ import { use, useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SignInButton, useUser } from '@clerk/nextjs';
+import Link from 'next/link';
+
+// Nota: La autenticación se habilita configurando Clerk con las variables de entorno
 
 // SVG Icons
 const HeartIcon = ({ filled = false }: { filled?: boolean }) => (
@@ -152,7 +154,6 @@ const demoContent: Record<string, ContentData> = {
 export default function WatchPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
-  const { isSignedIn } = useUser();
   const playerRef = useRef<HTMLDivElement>(null);
   
   // Player state
@@ -427,28 +428,28 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
             </p>
 
             <div className="flex items-center gap-3 flex-wrap">
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white gap-2">
-                <HeartIcon />
-                Ajouter a ma liste
-              </Button>
+              <Link href="/sign-in">
+                <Button className="bg-amber-600 hover:bg-amber-700 text-white gap-2">
+                  <HeartIcon />
+                  Ajouter a ma liste
+                </Button>
+              </Link>
               <Button variant="outline" className="border-stone-700 text-white hover:bg-stone-800 gap-2">
                 <ShareIcon />
                 Partager
               </Button>
             </div>
 
-            {!isSignedIn && (
-              <div className="mt-8 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
-                <p className="text-amber-400 text-sm mb-3">
-                  Connectez-vous pour ajouter ce contenu a votre liste.
-                </p>
-                <SignInButton mode="redirect">
-                  <Button className="bg-amber-600 hover:bg-amber-700 text-white">
-                    Se connecter
-                  </Button>
-                </SignInButton>
-              </div>
-            )}
+            <div className="mt-8 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
+              <p className="text-amber-400 text-sm mb-3">
+                Connectez-vous pour ajouter ce contenu a votre liste et profiter de toutes les fonctionnalites.
+              </p>
+              <Link href="/sign-in">
+                <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                  Se connecter
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
