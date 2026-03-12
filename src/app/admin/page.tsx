@@ -60,7 +60,7 @@ export default function AdminPage() {
     category: "movie",
     duration: "",
   });
-  const [youtubePreview, setYoutubePreview] = useState<{ videoId: string; thumbnail: string } | null>(null);
+  const [youtubePreview, setYoutubePreview] = useState<{ videoId: string; thumbnailUrl: string } | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Load films from localStorage
@@ -352,7 +352,7 @@ export default function AdminPage() {
                   <div className="flex items-start space-x-4 p-4 bg-dark rounded-lg border border-gray-700">
                     <div className="relative w-32 h-20 rounded overflow-hidden flex-shrink-0">
                       <Image
-                        src={formData.thumbnailUrl || youtubePreview.thumbnail}
+                        src={formData.thumbnailUrl || youtubePreview.thumbnailUrl}
                         alt="Preview"
                         fill
                         className="object-cover"
