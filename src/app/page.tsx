@@ -828,15 +828,65 @@ function HomePage() {
       <footer className="bg-[#0a0a0a] border-t border-stone-800 py-12">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            {/* Logo y descripcion */}
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <img src="/logo.svg" alt="LakayTV" className="h-8 w-8" />
                 <span className="text-lg font-bold text-white">LakayTV</span>
               </div>
-              <p className="text-stone-500 text-sm">
-                La plateforme de streaming dediee au contenu haitien.
+              <p className="text-stone-500 text-sm mb-4">
+                La plateforme de streaming dediee au contenu haitien. Films et series en Creole et Francais.
               </p>
+              {/* Redes Sociales */}
+              <div className="flex items-center gap-3">
+                {/* GitHub */}
+                <a 
+                  href="https://github.com/vertiljivenson9/LakayTv" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-stone-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                </a>
+                {/* WhatsApp */}
+                <a 
+                  href="https://wa.me/18096429126" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-stone-800 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                </a>
+                {/* Facebook */}
+                <a 
+                  href="https://www.facebook.com/share/1XAX547gjx/?mibextid=wwXIfr" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-stone-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </a>
+                {/* Discord */}
+                <a 
+                  href="https://discord.gg/TytxPNWpe" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-stone-800 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
+            
+            {/* Navigation */}
             <div>
               <h3 className="font-medium text-white mb-4">Navigation</h3>
               <ul className="space-y-2 text-stone-500 text-sm">
@@ -846,6 +896,8 @@ function HomePage() {
                 <li><a href="#top" className="hover:text-amber-400 transition-colors">Top Ranking</a></li>
               </ul>
             </div>
+            
+            {/* Producteurs */}
             <div>
               <h3 className="font-medium text-white mb-4">Producteurs</h3>
               <ul className="space-y-2 text-stone-500 text-sm">
@@ -855,19 +907,41 @@ function HomePage() {
                 <li><a href="/producer" className="hover:text-amber-400 transition-colors">Revenus</a></li>
               </ul>
             </div>
+            
+            {/* Contact et Legal */}
             <div>
-              <h3 className="font-medium text-white mb-4">Support</h3>
+              <h3 className="font-medium text-white mb-4">Contact</h3>
               <ul className="space-y-2 text-stone-500 text-sm">
-                <li><a href="#" className="hover:text-amber-400 transition-colors">Centre d&apos;aide</a></li>
-                <li><a href="#" className="hover:text-amber-400 transition-colors">Conditions</a></li>
-                <li><a href="#" className="hover:text-amber-400 transition-colors">Confidentialite</a></li>
+                <li className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-amber-400">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                  <a href="mailto:vertiljivenson9@gmail.com" className="hover:text-amber-400 transition-colors">vertiljivenson9@gmail.com</a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-amber-400">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <span>Cap-Haitien, Haiti</span>
+                </li>
+              </ul>
+              
+              <h3 className="font-medium text-white mb-4 mt-6">Legal</h3>
+              <ul className="space-y-2 text-stone-500 text-sm">
+                <li><a href="#" className="hover:text-amber-400 transition-colors">Conditions d&apos;utilisation</a></li>
+                <li><a href="#" className="hover:text-amber-400 transition-colors">Politique de confidentialite</a></li>
                 <li><a href="/admin" className="hover:text-amber-400 transition-colors">Admin</a></li>
               </ul>
             </div>
           </div>
+          
+          {/* Copyright */}
           <div className="border-t border-stone-800 pt-8 text-center text-stone-600 text-sm">
             <p>2025 LakayTV. Tous droits reserves. Plateforme de streaming haitien.</p>
             <p className="mt-2 text-stone-500">Films et Series en Creole et Francais</p>
+            <p className="mt-2 text-stone-500">Fonde par Vertil Jivenson - Cap-Haitien, Haiti</p>
           </div>
         </div>
       </footer>
