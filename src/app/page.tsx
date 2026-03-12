@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -878,19 +878,28 @@ function HomePage() {
 // ============ MAIN EXPORT ============
 export default function Home() {
   const [showWelcome, setShowWelcome] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
-  // Check if user has already seen the welcome page
-  if (typeof window !== 'undefined') {
+  useEffect(() => {
+    setMounted(true);
     const hasSeenWelcome = localStorage.getItem('lakaytv_welcome_seen');
-    if (hasSeenWelcome && showWelcome) {
+    if (hasSeenWelcome) {
       setShowWelcome(false);
     }
-  }
+  }, []);
 
   const handleContinue = () => {
     localStorage.setItem('lakaytv_welcome_seen', 'true');
     setShowWelcome(false);
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
+      </div>
+    );
+  }
 
   if (showWelcome) {
     return <WelcomePage onContinue={handleContinue} />;
