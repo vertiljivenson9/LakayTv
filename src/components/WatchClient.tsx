@@ -72,7 +72,7 @@ export function WatchClient({ id }: WatchClientProps) {
     <div className="min-h-screen bg-dark pt-16">
       {/* Netflix-Style Intro */}
       {showIntro && (
-        <NetflixIntro onComplete={handleIntroComplete} duration={6} />
+        <NetflixIntro onComplete={handleIntroComplete} />
       )}
 
       {/* Back Button */}
@@ -98,7 +98,7 @@ export function WatchClient({ id }: WatchClientProps) {
                   className="w-full h-full"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full h-full flex items-center justify-center bg-black">
                   <div className="text-center">
                     <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
                       <div className="w-8 h-8 rounded-full bg-primary/40" />

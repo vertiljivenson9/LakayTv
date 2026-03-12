@@ -47,7 +47,6 @@ export function FilmClient({ id }: FilmClientProps) {
   // Handle play button click - show intro first
   const handlePlayClick = () => {
     setShowIntro(true);
-    setIsPlaying(true);
   };
 
   // Handle intro complete - show YouTube player
@@ -58,7 +57,6 @@ export function FilmClient({ id }: FilmClientProps) {
 
   // Handle close player
   const handleClosePlayer = () => {
-    setIsPlaying(false);
     setShowIntro(false);
     setShowPlayer(false);
   };
@@ -224,7 +222,7 @@ export function FilmClient({ id }: FilmClientProps) {
 
       {/* Netflix-Style Intro */}
       {showIntro && (
-        <NetflixIntro onComplete={handleIntroComplete} duration={6} />
+        <NetflixIntro onComplete={handleIntroComplete} />
       )}
 
       {/* Embedded Player Modal */}
