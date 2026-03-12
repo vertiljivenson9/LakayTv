@@ -7,13 +7,15 @@ import { Play, ArrowLeft, Star, Clock, Calendar, User, Globe } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { getContentById, contents, Content } from "@/data/content";
 import { ContentCard } from "@/components/ContentCard";
+import { NetflixIntro } from "@/components/NetflixIntro";
 
 interface FilmClientProps {
   id: string;
 }
 
 export function FilmClient({ id }: FilmClientProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
+  const [showPlayer, setShowPlayer] = useState(false);
   const [userFilms, setUserFilms] = useState<Content[]>([]);
   const [content, setContent] = useState<Content | null>(null);
   const [allContent, setAllContent] = useState<Content[]>([]);
@@ -41,6 +43,25 @@ export function FilmClient({ id }: FilmClientProps) {
     const staticFilm = getContentById(id);
     setContent(userFilm || staticFilm || null);
   }, [id, userFilms]);
+
+  // Handle play button click - show intro first
+  const handlePlayClick = () => {
+    setShowIntro(true);
+    setIsPlaying(true);
+  };
+
+  // Handle intro complete - show YouTube player
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    setShowPlayer(true);
+  };
+
+  // Handle close player
+  const handleClosePlayer = () => {
+    setIsPlaying(false);
+    setShowIntro(false);
+    setShowPlayer(false);
+  };
 
   if (!content) {
     return (
@@ -102,7 +123,7 @@ export function FilmClient({ id }: FilmClientProps) {
                 />
                 {/* Play overlay */}
                 <button
-                  onClick={() => setIsPlaying(true)}
+                  onClick={handlePlayClick}
                   className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
@@ -185,7 +206,7 @@ export function FilmClient({ id }: FilmClientProps) {
                 <Button
                   size="lg"
                   className="bg-primary hover:bg-primary-600 text-white"
-                  onClick={() => setIsPlaying(true)}
+                  onClick={handlePlayClick}
                 >
                   <Play className="h-5 w-5 mr-2 fill-white" />
                   Regarder maintenant
@@ -201,13 +222,18 @@ export function FilmClient({ id }: FilmClientProps) {
         </div>
       </div>
 
+      {/* Netflix-Style Intro */}
+      {showIntro && (
+        <NetflixIntro onComplete={handleIntroComplete} duration={6} />
+      )}
+
       {/* Embedded Player Modal */}
-      {isPlaying && (
+      {showPlayer && (
         <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
           <div className="w-full max-w-6xl aspect-video relative">
             {/* Close Button */}
             <button
-              onClick={() => setIsPlaying(false)}
+              onClick={handleClosePlayer}
               className="absolute -top-10 right-0 text-white hover:text-primary transition-colors z-10"
             >
               Fermer ✕

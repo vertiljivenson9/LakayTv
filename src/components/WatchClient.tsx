@@ -7,6 +7,7 @@ import { ArrowLeft, Star, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getContentById, contents, Content } from "@/data/content";
 import { ContentCard } from "@/components/ContentCard";
+import { NetflixIntro } from "@/components/NetflixIntro";
 
 interface WatchClientProps {
   id: string;
@@ -16,6 +17,8 @@ export function WatchClient({ id }: WatchClientProps) {
   const [userFilms, setUserFilms] = useState<Content[]>([]);
   const [content, setContent] = useState<Content | null>(null);
   const [allContent, setAllContent] = useState<Content[]>([]);
+  const [showIntro, setShowIntro] = useState(true);
+  const [showPlayer, setShowPlayer] = useState(false);
 
   // Load user films from localStorage
   useEffect(() => {
@@ -41,6 +44,12 @@ export function WatchClient({ id }: WatchClientProps) {
     setContent(userFilm || staticFilm || null);
   }, [id, userFilms]);
 
+  // Handle intro complete - show YouTube player
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    setShowPlayer(true);
+  };
+
   if (!content) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
@@ -61,6 +70,11 @@ export function WatchClient({ id }: WatchClientProps) {
 
   return (
     <div className="min-h-screen bg-dark pt-16">
+      {/* Netflix-Style Intro */}
+      {showIntro && (
+        <NetflixIntro onComplete={handleIntroComplete} duration={6} />
+      )}
+
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <Link href={`/film/${content.id}`} className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
@@ -75,13 +89,24 @@ export function WatchClient({ id }: WatchClientProps) {
           {/* Main Player */}
           <div className="lg:col-span-2">
             <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
-              <iframe
-                src={`https://www.youtube.com/embed/${content.youtubeId}?autoplay=1`}
-                title={content.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
+              {showPlayer ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${content.youtubeId}?autoplay=1`}
+                  title={content.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                      <div className="w-8 h-8 rounded-full bg-primary/40" />
+                    </div>
+                    <p className="text-gray-400">Chargement...</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Video Info */}
