@@ -1,7 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
-import { useParams } from "next/navigation";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, ArrowLeft, Star, Clock, Calendar, User, Globe } from "lucide-react";
@@ -9,10 +6,25 @@ import { Button } from "@/components/ui/button";
 import { getContentById, contents } from "@/data/content";
 import { ContentCard } from "@/components/ContentCard";
 
-export default function FilmPage() {
-  const params = useParams();
-  const contentId = params.id as string;
-  const content = getContentById(contentId);
+// Generate static paths for all content
+export function generateStaticParams() {
+  return contents.map((content) => ({
+    id: content.id,
+  }));
+}
+
+// Film Detail Page Component
+export default function FilmPage({ params }: { params: Promise<{ id: string }> }) {
+  // This will be resolved at build time for static generation
+  return <FilmContent params={params} />;
+}
+
+// Client component for interactivity
+import { useState, use } from "react";
+
+function FilmContent({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const content = getContentById(id);
   const [isPlaying, setIsPlaying] = useState(false);
 
   if (!content) {

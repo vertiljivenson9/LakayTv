@@ -1,7 +1,4 @@
-"use client";
-
 import React from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Star, Clock, Calendar } from "lucide-react";
@@ -9,10 +6,23 @@ import { Button } from "@/components/ui/button";
 import { getContentById, contents } from "@/data/content";
 import { ContentCard } from "@/components/ContentCard";
 
-export default function WatchPage() {
-  const params = useParams();
-  const contentId = params.id as string;
-  const content = getContentById(contentId);
+// Generate static paths for all content
+export function generateStaticParams() {
+  return contents.map((content) => ({
+    id: content.id,
+  }));
+}
+
+// Watch Page Component
+export default function WatchPage({ params }: { params: Promise<{ id: string }> }) {
+  return <WatchContent params={params} />;
+}
+
+import { use } from "react";
+
+function WatchContent({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const content = getContentById(id);
 
   if (!content) {
     return (
