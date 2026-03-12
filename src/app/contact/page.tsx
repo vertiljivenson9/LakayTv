@@ -1,15 +1,50 @@
-import React from "react";
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone, MapPin, MessageCircle, Facebook, Github } from "lucide-react";
+import { ArrowLeft, Mail, Phone, MapPin, MessageCircle, Facebook, Github, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export const metadata = {
-  title: "Contact - LakayTV",
-  description: "Contactez l'équipe LakayTV pour toute question ou suggestion.",
-};
-
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    try {
+      const response = await fetch("https://formspree.io/f/xpqydgzr", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: `[LakayTV - ${formData.subject}]`,
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-dark pt-20 pb-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -103,12 +138,38 @@ export default function ContactPage() {
           {/* Contact Form */}
           <section className="bg-dark-50 rounded-lg p-6 border border-gray-800">
             <h2 className="text-xl font-bold text-white mb-6">Envoyez un Message</h2>
-            <form className="space-y-4">
+            
+            {/* Success Message */}
+            {status === "success" && (
+              <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg flex items-center space-x-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <div>
+                  <p className="text-green-400 font-medium">Message envoyé!</p>
+                  <p className="text-green-400/70 text-sm">Nous vous répondrons bientôt.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {status === "error" && (
+              <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg flex items-center space-x-3">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+                <div>
+                  <p className="text-red-400 font-medium">Erreur</p>
+                  <p className="text-red-400/70 text-sm">Veuillez réessayer plus tard.</p>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-gray-300 text-sm mb-2">Nom complet *</label>
                 <Input
                   type="text"
+                  name="name"
                   placeholder="Votre nom"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="bg-dark border-gray-700 text-white"
                   required
                 />
@@ -118,7 +179,10 @@ export default function ContactPage() {
                 <label className="block text-gray-300 text-sm mb-2">Email *</label>
                 <Input
                   type="email"
+                  name="email"
                   placeholder="votre@email.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="bg-dark border-gray-700 text-white"
                   required
                 />
@@ -126,27 +190,54 @@ export default function ContactPage() {
               
               <div>
                 <label className="block text-gray-300 text-sm mb-2">Sujet *</label>
-                <select className="w-full px-3 py-2 bg-dark border border-gray-700 rounded-md text-white">
+                <select 
+                  name="subject"
+                  value={formData.subject}
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  className="w-full px-3 py-2 bg-dark border border-gray-700 rounded-md text-white"
+                  required
+                >
                   <option value="">Sélectionner un sujet</option>
-                  <option value="general">Question générale</option>
-                  <option value="technical">Problème technique</option>
-                  <option value="partnership">Partenariat</option>
-                  <option value="submission">Soumission de film</option>
-                  <option value="feedback">Commentaires</option>
+                  <option value="Question générale">Question générale</option>
+                  <option value="Problème technique">Problème technique</option>
+                  <option value="Partenariat">Partenariat</option>
+                  <option value="Soumission de film">Soumission de film</option>
+                  <option value="Commentaires">Commentaires</option>
+                  <option value="Signaler un problème">Signaler un problème</option>
                 </select>
               </div>
               
               <div>
                 <label className="block text-gray-300 text-sm mb-2">Message *</label>
                 <textarea
+                  name="message"
                   placeholder="Votre message..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   className="w-full h-32 px-3 py-2 bg-dark border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary"
                   required
                 />
               </div>
               
-              <Button type="submit" className="w-full bg-primary hover:bg-primary-600 text-white py-6">
-                Envoyer le message
+              <Button 
+                type="submit" 
+                className="w-full bg-primary hover:bg-primary-600 text-white py-6"
+                disabled={status === "loading"}
+              >
+                {status === "loading" ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Envoi en cours...
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <Send className="h-5 w-5 mr-2" />
+                    Envoyer le message
+                  </span>
+                )}
               </Button>
             </form>
           </section>
