@@ -1,14 +1,56 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   ArrowLeft, Plus, Film, DollarSign, Eye, TrendingUp,
-  Upload, BarChart3, Settings, MessageSquare
+  Upload, BarChart3, Settings, MessageSquare, Image as ImageIcon, 
+  AlertTriangle, CheckCircle, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Content } from "@/data/content";
+
+// Function to convert any YouTube URL to embed format and extract video ID
+function parseYouTubeUrl(url: string): { videoId: string; embedUrl: string; thumbnailUrl: string } | null {
+  if (!url) return null;
+  
+  let videoId: string | null = null;
+  
+  // Handle various YouTube URL formats
+  const patterns = [
+    // Standard watch URL: https://www.youtube.com/watch?v=VIDEO_ID
+    /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+    // Short URL: https://youtu.be/VIDEO_ID
+    /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    // Embed URL: https://www.youtube.com/embed/VIDEO_ID
+    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    // Mobile URL: https://m.youtube.com/watch?v=VIDEO_ID
+    /(?:m\.youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+    // YouTube Shorts: https://www.youtube.com/shorts/VIDEO_ID
+    /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    // Live URL: https://www.youtube.com/live/VIDEO_ID
+    /(?:youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      videoId = match[1];
+      break;
+    }
+  }
+  
+  if (!videoId) return null;
+  
+  return {
+    videoId,
+    embedUrl: `https://www.youtube.com/embed/${videoId}`,
+    thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+  };
+}
 
 export default function ProducerPage() {
   const [formData, setFormData] = useState({
@@ -17,17 +59,99 @@ export default function ProducerPage() {
     youtubeUrl: "",
     genre: "",
     year: "",
+    thumbnailUrl: "",
   });
+  
+  const [submittedFilms, setSubmittedFilms] = useState<Content[]>([]);
+  const [youtubePreview, setYoutubePreview] = useState<{
+    videoId: string;
+    thumbnail: string;
+  } | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Load submitted films from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("lakaytv_submitted_films");
+    if (saved) {
+      try {
+        setSubmittedFilms(JSON.parse(saved));
+      } catch (e) {
+        console.error("Error loading saved films:", e);
+      }
+    }
+  }, []);
+
+  // Handle YouTube URL change and auto-extract thumbnail
+  const handleYoutubeUrlChange = (url: string) => {
+    setFormData({ ...formData, youtubeUrl: url });
+    
+    const parsed = parseYouTubeUrl(url);
+    if (parsed) {
+      setYoutubePreview({
+        videoId: parsed.videoId,
+        thumbnail: parsed.thumbnailUrl
+      });
+      // Auto-fill thumbnail URL if not manually set
+      if (!formData.thumbnailUrl) {
+        setFormData(prev => ({ ...prev, thumbnailUrl: parsed.thumbnailUrl }));
+      }
+    } else {
+      setYoutubePreview(null);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Submitting:", formData);
-    alert("Film soumis avec succès! (Mode démo)");
+    
+    const parsed = parseYouTubeUrl(formData.youtubeUrl);
+    if (!parsed) {
+      alert("URL YouTube invalide. Veuillez entrer un lien YouTube valide.");
+      return;
+    }
+    
+    // Create new film entry
+    const newFilm: Content = {
+      id: `user_${Date.now()}`,
+      title: formData.title,
+      description: formData.description,
+      thumbnail: formData.thumbnailUrl || parsed.thumbnailUrl,
+      youtubeId: parsed.videoId,
+      year: parseInt(formData.year) || new Date().getFullYear(),
+      category: "movie",
+      genre: formData.genre,
+      duration: "N/A",
+      rating: "Nouveau",
+    };
+    
+    // Save to localStorage
+    const updatedFilms = [newFilm, ...submittedFilms];
+    setSubmittedFilms(updatedFilms);
+    localStorage.setItem("lakaytv_submitted_films", JSON.stringify(updatedFilms));
+    
+    // Reset form
+    setFormData({
+      title: "",
+      description: "",
+      youtubeUrl: "",
+      genre: "",
+      year: "",
+      thumbnailUrl: "",
+    });
+    setYoutubePreview(null);
+    
+    // Show success message
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 5000);
+  };
+
+  const handleDeleteFilm = (id: string) => {
+    const updatedFilms = submittedFilms.filter(f => f.id !== id);
+    setSubmittedFilms(updatedFilms);
+    localStorage.setItem("lakaytv_submitted_films", JSON.stringify(updatedFilms));
   };
 
   const stats = {
-    films: 3,
+    films: submittedFilms.length,
     views: 12500,
     revenue: 1250,
     rating: 4.5,
@@ -45,6 +169,33 @@ export default function ProducerPage() {
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Espace Producteur</h1>
               <p className="text-gray-400">Gérez et publiez vos films sur LakayTV</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Success Message */}
+        {showSuccess && (
+          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+            <div>
+              <p className="text-green-400 font-medium">Film soumis avec succès!</p>
+              <p className="text-green-400/70 text-sm">Votre film a été ajouté à la liste ci-dessous.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Warning Banner */}
+        <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+          <div className="flex items-start space-x-3">
+            <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-yellow-400 font-medium">Note importante sur la persistance des données</p>
+              <p className="text-yellow-400/70 text-sm mt-1">
+                Les films soumis sont stockés localement dans votre navigateur (localStorage). 
+                Ils ne sont pas sauvegardés sur un serveur et seront perdus si vous effacez 
+                les données du navigateur. Une base de données sera ajoutée prochainement 
+                pour une persistance permanente.
+              </p>
             </div>
           </div>
         </div>
@@ -146,15 +297,70 @@ export default function ProducerPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-gray-300 text-sm mb-1">URL YouTube</label>
+                  <label className="block text-gray-300 text-sm mb-1">
+                    URL YouTube 
+                    <span className="text-gray-500 text-xs ml-2">(Tous formats acceptés)</span>
+                  </label>
                   <Input
                     type="url"
-                    placeholder="https://youtube.com/watch?v=..."
+                    placeholder="https://youtube.com/watch?v=... ou youtu.be/..."
                     value={formData.youtubeUrl}
-                    onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })}
+                    onChange={(e) => handleYoutubeUrlChange(e.target.value)}
                     className="bg-dark border-gray-700 text-white"
                     required
                   />
+                  <p className="text-gray-500 text-xs mt-1">
+                    Formats acceptés: youtube.com/watch, youtu.be, youtube.com/embed, youtube.com/shorts, etc.
+                  </p>
+                </div>
+
+                {/* YouTube Preview */}
+                {youtubePreview && (
+                  <div className="p-3 bg-dark-50 border border-gray-700 rounded-lg">
+                    <p className="text-gray-400 text-sm mb-2">Aperçu YouTube détecté:</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="relative w-24 h-16 rounded overflow-hidden">
+                        <Image
+                          src={youtubePreview.thumbnail}
+                          alt="Thumbnail"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-white text-sm">Video ID: {youtubePreview.videoId}</p>
+                        <p className="text-green-400 text-xs">✓ URL valide</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">
+                    <ImageIcon className="h-4 w-4 inline mr-1" />
+                    URL de l&apos;image (Miniature)
+                    <span className="text-gray-500 text-xs ml-2">(Optionnel - auto-détecté depuis YouTube)</span>
+                  </label>
+                  <Input
+                    type="url"
+                    placeholder="https://... (laissez vide pour utiliser la miniature YouTube)"
+                    value={formData.thumbnailUrl}
+                    onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
+                    className="bg-dark border-gray-700 text-white"
+                  />
+                  {formData.thumbnailUrl && (
+                    <div className="mt-2 relative w-20 h-28 rounded overflow-hidden">
+                      <Image
+                        src={formData.thumbnailUrl}
+                        alt="Aperçu"
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -199,6 +405,51 @@ export default function ProducerPage() {
 
           {/* Quick Actions & Info */}
           <div className="space-y-6">
+            {/* My Submitted Films */}
+            {submittedFilms.length > 0 && (
+              <Card className="bg-dark-50 border-gray-800">
+                <CardHeader>
+                  <CardTitle className="text-white text-lg flex items-center">
+                    <Film className="h-5 w-5 mr-2 text-primary" />
+                    Mes Films Soumis ({submittedFilms.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {submittedFilms.map((film) => (
+                      <div key={film.id} className="flex items-center space-x-3 p-2 bg-dark rounded-lg">
+                        <div className="relative w-16 h-20 flex-shrink-0 rounded overflow-hidden">
+                          <Image
+                            src={film.thumbnail}
+                            alt={film.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-medium text-sm truncate">{film.title}</p>
+                          <p className="text-gray-500 text-xs">{film.genre} • {film.year}</p>
+                          <Link 
+                            href={`/film/${film.id}`}
+                            className="text-primary text-xs hover:underline"
+                          >
+                            Voir →
+                          </Link>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteFilm(film.id)}
+                          className="p-1 text-gray-500 hover:text-red-500"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Creator Program */}
             <Card className="bg-gradient-to-br from-primary/20 to-dark-50 border-gray-800">
               <CardContent className="pt-6">

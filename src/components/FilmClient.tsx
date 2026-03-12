@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, ArrowLeft, Star, Clock, Calendar, User, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getContentById, contents } from "@/data/content";
+import { getContentById, contents, Content } from "@/data/content";
 import { ContentCard } from "@/components/ContentCard";
 
 interface FilmClientProps {
@@ -13,14 +13,43 @@ interface FilmClientProps {
 }
 
 export function FilmClient({ id }: FilmClientProps) {
-  const content = getContentById(id);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [userFilms, setUserFilms] = useState<Content[]>([]);
+  const [content, setContent] = useState<Content | null>(null);
+  const [allContent, setAllContent] = useState<Content[]>([]);
+
+  // Load user films from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("lakaytv_submitted_films");
+    if (saved) {
+      try {
+        const parsed: Content[] = JSON.parse(saved);
+        setUserFilms(parsed);
+      } catch (e) {
+        console.error("Error loading saved films:", e);
+      }
+    }
+  }, []);
+
+  // Combine content and find the film
+  useEffect(() => {
+    const combined = [...userFilms, ...contents];
+    setAllContent(combined);
+    
+    // First check user films, then static content
+    const userFilm = userFilms.find(f => f.id === id);
+    const staticFilm = getContentById(id);
+    setContent(userFilm || staticFilm || null);
+  }, [id, userFilms]);
 
   if (!content) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Contenu non trouvé</h1>
+          <p className="text-gray-400 mb-4">
+            Ce film n&apos;a pas été trouvé. Il peut avoir été supprimé ou le lien est incorrect.
+          </p>
           <Link href="/">
             <Button>Retour à l&apos;accueil</Button>
           </Link>
@@ -30,7 +59,7 @@ export function FilmClient({ id }: FilmClientProps) {
   }
 
   // Get related content (same category, excluding current)
-  const relatedContent = contents
+  const relatedContent = allContent
     .filter((c) => c.category === content.category && c.id !== content.id)
     .slice(0, 6);
 

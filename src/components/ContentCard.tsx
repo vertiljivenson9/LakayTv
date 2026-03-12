@@ -8,9 +8,49 @@ import { Content } from "@/data/content";
 
 interface ContentCardProps {
   content: Content;
+  size?: "normal" | "small";
 }
 
-export function ContentCard({ content }: ContentCardProps) {
+export function ContentCard({ content, size = "normal" }: ContentCardProps) {
+  if (size === "small") {
+    return (
+      <Link href={`/film/${content.id}`} className="flex-shrink-0 w-32 sm:w-36">
+        <div className="group relative aspect-[2/3] rounded-md overflow-hidden bg-dark-50 cursor-pointer">
+          {/* Thumbnail */}
+          <Image
+            src={content.thumbnail}
+            alt={content.title}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="144px"
+          />
+          
+          {/* Play Button Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40">
+            <div className="w-10 h-10 rounded-full bg-primary/90 flex items-center justify-center">
+              <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+            </div>
+          </div>
+
+          {/* Category Badge */}
+          <div className="absolute top-1 left-1">
+            <span className="px-1.5 py-0.5 text-[10px] font-medium bg-primary/80 text-white rounded">
+              {content.category === "movie" ? "Film" : 
+               content.category === "series" ? "Série" :
+               content.category === "documentary" ? "Doc" : "Court"}
+            </span>
+          </div>
+        </div>
+        
+        {/* Title */}
+        <div className="mt-1.5">
+          <h3 className="text-white font-medium text-xs truncate">{content.title}</h3>
+          <p className="text-gray-500 text-[10px] truncate">{content.genre} • {content.year}</p>
+        </div>
+      </Link>
+    );
+  }
+
   return (
     <Link href={`/film/${content.id}`}>
       <div className="group relative aspect-[2/3] rounded-lg overflow-hidden bg-dark-50 cursor-pointer">

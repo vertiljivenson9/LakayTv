@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Star, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getContentById, contents } from "@/data/content";
+import { getContentById, contents, Content } from "@/data/content";
 import { ContentCard } from "@/components/ContentCard";
 
 interface WatchClientProps {
@@ -13,7 +13,33 @@ interface WatchClientProps {
 }
 
 export function WatchClient({ id }: WatchClientProps) {
-  const content = getContentById(id);
+  const [userFilms, setUserFilms] = useState<Content[]>([]);
+  const [content, setContent] = useState<Content | null>(null);
+  const [allContent, setAllContent] = useState<Content[]>([]);
+
+  // Load user films from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("lakaytv_submitted_films");
+    if (saved) {
+      try {
+        const parsed: Content[] = JSON.parse(saved);
+        setUserFilms(parsed);
+      } catch (e) {
+        console.error("Error loading saved films:", e);
+      }
+    }
+  }, []);
+
+  // Combine content and find the film
+  useEffect(() => {
+    const combined = [...userFilms, ...contents];
+    setAllContent(combined);
+    
+    // First check user films, then static content
+    const userFilm = userFilms.find(f => f.id === id);
+    const staticFilm = getContentById(id);
+    setContent(userFilm || staticFilm || null);
+  }, [id, userFilms]);
 
   if (!content) {
     return (
@@ -29,7 +55,7 @@ export function WatchClient({ id }: WatchClientProps) {
   }
 
   // Get related content
-  const relatedContent = contents
+  const relatedContent = allContent
     .filter((c) => c.id !== content.id)
     .slice(0, 6);
 
@@ -118,7 +144,7 @@ export function WatchClient({ id }: WatchClientProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-xl font-bold text-white mb-6">Autres contenus</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {contents.slice(6).map((c) => (
+          {allContent.slice(6).map((c) => (
             <ContentCard key={c.id} content={c} />
           ))}
         </div>
