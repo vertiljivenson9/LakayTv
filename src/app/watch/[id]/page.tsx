@@ -36,6 +36,12 @@ const ShareIcon = () => (
   </svg>
 );
 
+const PlayIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+    <polygon points="5 3 19 12 5 21 5 3"/>
+  </svg>
+);
+
 interface ContentData {
   id: string;
   title: string;
@@ -48,34 +54,34 @@ interface ContentData {
   genre: string;
 }
 
-// Base de datos de demo
+// Base de datos de demo con videos reales de YouTube
 const demoContent: Record<string, ContentData> = {
-  'featured-1': { id: 'featured-1', title: 'ENSANSIB', youtubeId: 'JOcNyL5tUO4', type: 'FILM', language: 'Creole', rating: 4.9, year: 2024, description: 'Une production de Magic Film.', genre: 'Drame' },
-  'top1': { id: 'top1', title: 'ENSANSIB', youtubeId: 'JOcNyL5tUO4', type: 'FILM', language: 'Creole', rating: 4.9, year: 2024, description: 'Tragique histoire de couple.', genre: 'Drame' },
-  'top2': { id: 'top2', title: 'LANMO MANMAN M', youtubeId: 'ZUM4UKnspCg', type: 'SERIE', language: 'Creole', rating: 4.8, year: 2024, description: 'Feyton populaire.', genre: 'Drame' },
-  'top3': { id: 'top3', title: '2 FRERES JALOUX', youtubeId: 'PoUe8bCHGRo', type: 'FILM', language: 'Creole', rating: 4.7, year: 2025, description: 'Jalousie fraternelle.', genre: 'Drame' },
-  'top4': { id: 'top4', title: 'MANMAN ZONBI', youtubeId: 'F43oGHZM1A4', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Horreur vaudou.', genre: 'Horreur' },
-  'top5': { id: 'top5', title: 'PASYANS', youtubeId: 'i-tEGbafd0c', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Perseverance.', genre: 'Drame' },
-  'f1': { id: 'f1', title: 'ENSANSIB', youtubeId: 'JOcNyL5tUO4', type: 'FILM', language: 'Creole', rating: 4.9, year: 2024, description: 'Drame', genre: 'Drame' },
-  'f2': { id: 'f2', title: '2 FRERES JALOUX', youtubeId: 'PoUe8bCHGRo', type: 'FILM', language: 'Creole', rating: 4.7, year: 2025, description: 'Drame', genre: 'Drame' },
-  'f3': { id: 'f3', title: 'MANMAN ZONBI', youtubeId: 'F43oGHZM1A4', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Horreur', genre: 'Horreur' },
-  'f4': { id: 'f4', title: 'TRAHISON', youtubeId: 'WHX983z6ZqQ', type: 'FILM', language: 'Creole', rating: 4.5, year: 2024, description: 'Drame', genre: 'Drame' },
-  'f5': { id: 'f5', title: 'PASYANS', youtubeId: 'i-tEGbafd0c', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Drame', genre: 'Drame' },
-  'f6': { id: 'f6', title: 'REYALITE', youtubeId: 'WMi_1_6guVs', type: 'FILM', language: 'Creole', rating: 4.4, year: 2024, description: 'Drame', genre: 'Drame' },
-  'f7': { id: 'f7', title: 'TRET MAKIYE', youtubeId: '7_8svqjHfqY', type: 'FILM', language: 'Creole', rating: 4.5, year: 2024, description: 'Court-metrage', genre: 'Court-metrage' },
-  'f8': { id: 'f8', title: 'VWAZEN AN', youtubeId: '1n5GWkYZN00', type: 'FILM', language: 'Creole', rating: 4.3, year: 2024, description: 'Comedie', genre: 'Comedie' },
-  'f9': { id: 'f9', title: 'SAW FE SE LI OU WE', youtubeId: '161oBU5v70A', type: 'FILM', language: 'Creole', rating: 4.4, year: 2024, description: 'Drame', genre: 'Drame' },
-  'f10': { id: 'f10', title: 'SONY SAN MATIRITE', youtubeId: 'GWmTi2m-_-U', type: 'FILM', language: 'Creole', rating: 4.2, year: 2024, description: 'Comedie', genre: 'Comedie' },
-  'f11': { id: 'f11', title: 'MEILLEUR FILM HAITIEN', youtubeId: 'Bakp4mqafJU', type: 'FILM', language: 'Creole', rating: 4.3, year: 2024, description: 'Drame', genre: 'Drame' },
-  'f12': { id: 'f12', title: 'MIRACLE DE LA FOI', youtubeId: 'YOCkCoaJxo4', type: 'FILM', language: 'Creole', rating: 4.4, year: 2024, description: 'Drame', genre: 'Drame' },
-  's1': { id: 's1', title: 'LANMO MANMAN M', youtubeId: 'ZUM4UKnspCg', type: 'SERIE', language: 'Creole', rating: 4.8, year: 2024, description: 'Feyton', genre: 'Drame' },
-  's2': { id: 's2', title: 'ENSANSIB SERIE', youtubeId: 'PoUe8bCHGRo', type: 'SERIE', language: 'Creole', rating: 4.7, year: 2024, description: 'Web serie', genre: 'Drame' },
-  's3': { id: 's3', title: 'MANMAN M TOUYE MENNAJ MWEN', youtubeId: 'evVTfc5S3G8', type: 'SERIE', language: 'Creole', rating: 4.6, year: 2024, description: 'Drame', genre: 'Drame' },
-  's4': { id: 's4', title: 'MIZE LUMIE', youtubeId: 'etSBxOlUEx8', type: 'SERIE', language: 'Creole', rating: 4.5, year: 2024, description: 'Drame', genre: 'Drame' },
-  's5': { id: 's5', title: 'ISTWA LAVI TI CHOLINE', youtubeId: '4BGcFV8O8w0', type: 'SERIE', language: 'Creole', rating: 4.4, year: 2024, description: 'Drame', genre: 'Drame' },
-  's6': { id: 's6', title: 'MANMANM MECHAN', youtubeId: 'Ue-neeTE7nM', type: 'SERIE', language: 'Creole', rating: 4.5, year: 2024, description: 'Drame', genre: 'Drame' },
-  's7': { id: 's7', title: 'FOS LANMOU', youtubeId: 'lrQfzikSc2Y', type: 'SERIE', language: 'Creole', rating: 4.3, year: 2024, description: 'Romance', genre: 'Romance' },
-  's8': { id: 's8', title: 'MA RIVALE', youtubeId: 'MPJV7h7ad8I', type: 'SERIE', language: 'Creole', rating: 4.4, year: 2024, description: 'Drame', genre: 'Drame' },
+  'featured-1': { id: 'featured-1', title: 'ENSANSIB', youtubeId: 'JOcNyL5tUO4', type: 'FILM', language: 'Creole', rating: 4.9, year: 2024, description: 'Une production de Magic Film, ecrit et realise par Steeve Bicot. Une tragique histoire de couple.', genre: 'Drame' },
+  'top1': { id: 'top1', title: 'ENSANSIB', youtubeId: 'JOcNyL5tUO4', type: 'FILM', language: 'Creole', rating: 4.9, year: 2024, description: 'Tragique histoire de couple par Steeve Bicot.', genre: 'Drame' },
+  'top2': { id: 'top2', title: 'LANMO MANMAN M', youtubeId: 'ZUM4UKnspCg', type: 'SERIE', language: 'Creole', rating: 4.8, year: 2024, description: 'Feyton populaire par CHARLY HSM.', genre: 'Drame' },
+  'top3': { id: 'top3', title: '2 FRERES JALOUX', youtubeId: 'PoUe8bCHGRo', type: 'FILM', language: 'Creole', rating: 4.7, year: 2025, description: 'Nouveau film haitien par Steeve Bicot.', genre: 'Drame' },
+  'top4': { id: 'top4', title: 'MANMAN ZONBI', youtubeId: 'F43oGHZM1A4', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Horreur et traditions vaudou haitiennes.', genre: 'Horreur' },
+  'top5': { id: 'top5', title: 'PASYANS', youtubeId: 'i-tEGbafd0c', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Un film poignant sur la perseverance.', genre: 'Drame' },
+  'f1': { id: 'f1', title: 'ENSANSIB', youtubeId: 'JOcNyL5tUO4', type: 'FILM', language: 'Creole', rating: 4.9, year: 2024, description: 'Tragique histoire de couple', genre: 'Drame' },
+  'f2': { id: 'f2', title: '2 FRERES JALOUX', youtubeId: 'PoUe8bCHGRo', type: 'FILM', language: 'Creole', rating: 4.7, year: 2025, description: 'Jalousie fraternelle', genre: 'Drame' },
+  'f3': { id: 'f3', title: 'MANMAN ZONBI', youtubeId: 'F43oGHZM1A4', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Horreur vaudou', genre: 'Horreur' },
+  'f4': { id: 'f4', title: 'TRAHISON', youtubeId: 'WHX983z6ZqQ', type: 'FILM', language: 'Creole', rating: 4.5, year: 2024, description: 'Trahison et redemption', genre: 'Drame' },
+  'f5': { id: 'f5', title: 'PASYANS', youtubeId: 'i-tEGbafd0c', type: 'FILM', language: 'Creole', rating: 4.6, year: 2024, description: 'Perseverance et courage', genre: 'Drame' },
+  'f6': { id: 'f6', title: 'REYALITE', youtubeId: 'WMi_1_6guVs', type: 'FILM', language: 'Creole', rating: 4.4, year: 2024, description: 'La realite haïtienne', genre: 'Drame' },
+  'f7': { id: 'f7', title: 'TRET MAKIYE', youtubeId: '7_8svqjHfqY', type: 'FILM', language: 'Creole', rating: 4.5, year: 2024, description: 'Court-metrage haïtien', genre: 'Court-metrage' },
+  'f8': { id: 'f8', title: 'VWAZEN AN', youtubeId: '1n5GWkYZN00', type: 'FILM', language: 'Creole', rating: 4.3, year: 2024, description: 'Histoire de voisinage', genre: 'Comedie' },
+  'f9': { id: 'f9', title: 'SAW FE SE LI OU WE', youtubeId: '161oBU5v70A', type: 'FILM', language: 'Creole', rating: 4.4, year: 2024, description: 'Les consequences de nos actes', genre: 'Drame' },
+  'f10': { id: 'f10', title: 'SONY SAN MATIRITE', youtubeId: 'GWmTi2m-_-U', type: 'FILM', language: 'Creole', rating: 4.2, year: 2024, description: 'Comedie haïtienne', genre: 'Comedie' },
+  'f11': { id: 'f11', title: 'MEILLEUR FILM HAITIEN', youtubeId: 'Bakp4mqafJU', type: 'FILM', language: 'Creole', rating: 4.3, year: 2024, description: 'Cinema haïtien', genre: 'Drame' },
+  'f12': { id: 'f12', title: 'MIRACLE DE LA FOI', youtubeId: 'YOCkCoaJxo4', type: 'FILM', language: 'Creole', rating: 4.4, year: 2024, description: 'Foi et miracles', genre: 'Drame' },
+  's1': { id: 's1', title: 'LANMO MANMAN M', youtubeId: 'ZUM4UKnspCg', type: 'SERIE', language: 'Creole', rating: 4.8, year: 2024, description: 'Feyton populaire par CHARLY HSM', genre: 'Drame' },
+  's2': { id: 's2', title: 'ENSANSIB SERIE', youtubeId: 'PoUe8bCHGRo', type: 'SERIE', language: 'Creole', rating: 4.7, year: 2024, description: 'Web serie par Magic Film', genre: 'Drame' },
+  's3': { id: 's3', title: 'MANMAN M TOUYE MENNAJ MWEN', youtubeId: 'evVTfc5S3G8', type: 'SERIE', language: 'Creole', rating: 4.6, year: 2024, description: 'Drame familial intense', genre: 'Drame' },
+  's4': { id: 's4', title: 'MIZE LUMIE', youtubeId: 'etSBxOlUEx8', type: 'SERIE', language: 'Creole', rating: 4.5, year: 2024, description: "Histoire d'une orpheline", genre: 'Drame' },
+  's5': { id: 's5', title: 'ISTWA LAVI TI CHOLINE', youtubeId: '4BGcFV8O8w0', type: 'SERIE', language: 'Creole', rating: 4.4, year: 2024, description: 'Parcours de vie', genre: 'Drame' },
+  's6': { id: 's6', title: 'MANMANM MECHAN', youtubeId: 'Ue-neeTE7nM', type: 'SERIE', language: 'Creole', rating: 4.5, year: 2024, description: 'Relations familiales', genre: 'Drame' },
+  's7': { id: 's7', title: 'FOS LANMOU', youtubeId: 'lrQfzikSc2Y', type: 'SERIE', language: 'Creole', rating: 4.3, year: 2024, description: "La force de l'amour", genre: 'Romance' },
+  's8': { id: 's8', title: 'MA RIVALE', youtubeId: 'MPJV7h7ad8I', type: 'SERIE', language: 'Creole', rating: 4.4, year: 2024, description: 'Rivalites et trahisons', genre: 'Drame' },
   't1': { id: 't1', title: 'LANMO MANMAN M', youtubeId: 'ZUM4UKnspCg', type: 'SERIE', language: 'Creole', rating: 4.8, year: 2024, description: 'Drame', genre: 'Drame' },
   't2': { id: 't2', title: 'ENSANSIB', youtubeId: 'JOcNyL5tUO4', type: 'FILM', language: 'Creole', rating: 4.9, year: 2024, description: 'Drame', genre: 'Drame' },
   't3': { id: 't3', title: '2 FRERES JALOUX', youtubeId: 'PoUe8bCHGRo', type: 'FILM', language: 'Creole', rating: 4.7, year: 2025, description: 'Drame', genre: 'Drame' },
@@ -99,8 +105,9 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
   // Obtener contenido
   const content = resolvedParams.id ? demoContent[resolvedParams.id] : null;
   const [isClient, setIsClient] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
 
-  // Redirigir si no existe
+  // Efecto para montar el cliente
   useEffect(() => {
     setIsClient(true);
     if (!content) {
@@ -108,16 +115,37 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
     }
   }, [content, router]);
 
+  // Función para compartir
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: content?.title || 'LakayTV',
+          text: `Regarde ${content?.title} sur LakayTV!`,
+          url: window.location.href,
+        });
+      } catch {
+        // User cancelled or error
+      }
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
   if (!content) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-white">Chargement...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+          <div className="text-white">Chargement...</div>
+        </div>
       </div>
     );
   }
 
-  // URL de YouTube con controles nativos
-  const youtubeEmbedUrl = `https://www.youtube.com/embed/${content.youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&color=white&theme=dark`;
+  // URL del video de YouTube - usando embed con controles
+  const youtubeEmbedUrl = `https://www.youtube.com/embed/${content.youtubeId}?autoplay=1&rel=0&modestbranding=1`;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -142,17 +170,35 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
         </div>
       </header>
 
-      {/* Video Player - YouTube nativo */}
+      {/* Video Player */}
       <div className="pt-16">
-        <div className="relative w-full aspect-video bg-black max-h-[85vh]">
+        <div className="relative w-full bg-black" style={{ minHeight: '50vh' }}>
+          {/* Thumbnail con botón de play mientras carga */}
+          {!playerReady && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
+              <img
+                src={`https://img.youtube.com/vi/${content.youtubeId}/maxresdefault.jpg`}
+                alt={content.title}
+                className="absolute inset-0 w-full h-full object-cover opacity-50"
+              />
+              <div className="relative z-20 animate-pulse">
+                <PlayIcon />
+              </div>
+            </div>
+          )}
+          
+          {/* YouTube iframe */}
           {isClient && (
-            <iframe
-              src={youtubeEmbedUrl}
-              title={content.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              allowFullScreen
-              className="w-full h-full absolute inset-0"
-            />
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                src={youtubeEmbedUrl}
+                title={content.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+                onLoad={() => setPlayerReady(true)}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -160,6 +206,7 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
       {/* Content Info */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-6">
+          {/* Thumbnail */}
           <div className="hidden md:block w-48 flex-shrink-0">
             <div className="aspect-[2/3] rounded-lg overflow-hidden bg-stone-800">
               <img
@@ -171,6 +218,7 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
           </div>
 
           <div className="flex-1">
+            {/* Badges */}
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <Badge className={content.type === 'FILM' ? 'bg-blue-600' : 'bg-purple-600'}>
                 {content.type === 'FILM' ? 'Film' : 'Serie'}
@@ -183,10 +231,12 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
               </Badge>
             </div>
 
+            {/* Title */}
             <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">
               {content.title}
             </h1>
 
+            {/* Rating & Year */}
             <div className="flex items-center gap-4 text-stone-400 text-sm mb-4">
               <span className="flex items-center gap-1 text-amber-400">
                 <StarIcon filled /> {content.rating}
@@ -194,10 +244,12 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
               <span>{content.year}</span>
             </div>
 
+            {/* Description */}
             <p className="text-stone-300 leading-relaxed mb-6">
               {content.description}
             </p>
 
+            {/* Action Buttons */}
             <div className="flex items-center gap-3 flex-wrap">
               <Link href="/">
                 <Button className="bg-amber-600 hover:bg-amber-700 text-white gap-2">
@@ -205,13 +257,34 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
                   Ajouter a ma liste
                 </Button>
               </Link>
-              <Button variant="outline" className="border-stone-700 text-white hover:bg-stone-800 gap-2">
+              <Button 
+                variant="outline" 
+                className="border-stone-700 text-white hover:bg-stone-800 gap-2"
+                onClick={handleShare}
+              >
                 <ShareIcon />
                 Partager
               </Button>
             </div>
 
-            <div className="mt-8 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
+            {/* Watch on YouTube link */}
+            <div className="mt-6 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
+              <p className="text-red-300 text-sm mb-3">
+                Si le video ne joue pas, vous pouvez le regarder directement sur YouTube.
+              </p>
+              <a 
+                href={`https://www.youtube.com/watch?v=${content.youtubeId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-red-600 hover:bg-red-700 text-white">
+                  Regarder sur YouTube
+                </Button>
+              </a>
+            </div>
+
+            {/* Login prompt */}
+            <div className="mt-6 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
               <p className="text-amber-400 text-sm mb-3">
                 Connectez-vous pour ajouter ce contenu a votre liste et profiter de toutes les fonctionnalites.
               </p>

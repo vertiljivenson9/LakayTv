@@ -1,23 +1,23 @@
 'use client'
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 // SVG Icons
-const FilmIcon = () => (
+const ArrowLeftIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-    <line x1="7" y1="2" x2="7" y2="22"/>
-    <line x1="17" y1="2" x2="17" y2="22"/>
-    <line x1="2" y1="12" x2="22" y2="12"/>
+    <line x1="19" y1="12" x2="5" y2="12"/>
+    <polyline points="12 19 5 12 12 5"/>
+  </svg>
+);
+
+const PlusIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="5" x2="12" y2="19"/>
+    <line x1="5" y1="12" x2="19" y2="12"/>
   </svg>
 );
 
@@ -29,396 +29,436 @@ const UploadIcon = () => (
   </svg>
 );
 
-const AlertIcon = () => (
+const FilmIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+    <line x1="7" y1="2" x2="7" y2="22"/>
+    <line x1="17" y1="2" x2="17" y2="22"/>
+    <line x1="2" y1="12" x2="22" y2="12"/>
+  </svg>
+);
+
+const TvIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+    <polyline points="17 2 12 7 7 2"/>
+  </svg>
+);
+
+const DollarIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="1" x2="12" y2="23"/>
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+  </svg>
+);
+
+const EyeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <circle cx="12" cy="12" r="10"/>
-    <line x1="12" y1="8" x2="12" y2="12"/>
-    <line x1="12" y1="16" x2="12.01" y2="16"/>
+    <polyline points="12 6 12 12 16 14"/>
   </svg>
 );
 
-const ArrowLeftIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="19" y1="12" x2="5" y2="12"/>
-    <polyline points="12 19 5 12 12 5"/>
-  </svg>
-);
-
-interface Content {
+interface ProducerContent {
   id: string;
   title: string;
-  description: string | null;
-  type: string;
-  language: string;
-  status: string;
-  thumbnailUrl: string | null;
-  videoUrl: string;
-  createdAt: string;
+  youtubeId: string;
+  type: 'FILM' | 'SERIE';
+  status: 'pending' | 'approved' | 'rejected';
+  views: number;
+  revenue: number;
+  submittedAt: string;
+  thumbnail: string;
 }
 
-// Generar ID único para productor anónimo
-const getProducerId = () => {
-  if (typeof window !== 'undefined') {
-    let id = localStorage.getItem('lakaytv_producer_id');
-    if (!id) {
-      id = 'producer_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('lakaytv_producer_id', id);
-    }
-    return id;
-  }
-  return 'producer_anonymous';
-};
+// Contenido de demostración para el productor
+const initialProducerContent: ProducerContent[] = [
+  { 
+    id: 'p1', 
+    title: 'MON PREMIER FILM', 
+    youtubeId: 'dQw4w9WgXcQ', 
+    type: 'FILM', 
+    status: 'approved', 
+    views: 15420, 
+    revenue: 125.50,
+    submittedAt: '2024-01-15',
+    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg'
+  },
+  { 
+    id: 'p2', 
+    title: 'MA SERIE EPISODE 1', 
+    youtubeId: 'JOcNyL5tUO4', 
+    type: 'SERIE', 
+    status: 'pending', 
+    views: 0, 
+    revenue: 0,
+    submittedAt: '2024-01-20',
+    thumbnail: 'https://img.youtube.com/vi/JOcNyL5tUO4/hqdefault.jpg'
+  },
+];
 
 export default function ProducerPage() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [myContent, setMyContent] = useState<Content[]>([]);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [content, setContent] = useState<ProducerContent[]>([]);
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
+    youtubeId: '',
+    type: 'FILM' as 'FILM' | 'SERIE',
     description: '',
-    type: 'MOVIE',
-    language: 'CREOLE',
-    youtubeUrl: '',
-    thumbnailUrl: '',
-    duration: '',
-    releaseYear: '',
   });
 
-  // Extraer preview de YouTube
-  const handleYoutubeChange = (url: string) => {
-    setFormData({ ...formData, youtubeUrl: url });
-
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    ];
-
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        setPreviewUrl(`https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`);
-        return;
-      }
-    }
-    setPreviewUrl(null);
-  };
-
-  // Enviar formulario
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.title || !formData.youtubeUrl) {
-      toast({
-        title: "Erreur",
-        description: "Le titre et l'URL YouTube sont requis",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const producerId = getProducerId();
-      
-      const response = await fetch('/api/content', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          producerId: producerId,
-          duration: parseInt(formData.duration) || 0,
-          releaseYear: parseInt(formData.releaseYear) || new Date().getFullYear(),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast({
-          title: "Succes",
-          description: "Contenu soumis pour validation",
-        });
-        setFormData({
-          title: '',
-          description: '',
-          type: 'MOVIE',
-          language: 'CREOLE',
-          youtubeUrl: '',
-          thumbnailUrl: '',
-          duration: '',
-          releaseYear: '',
-        });
-        setPreviewUrl(null);
-        // Recargar contenido
-        loadMyContent();
-      } else {
-        toast({
-          title: "Erreur",
-          description: data.error || "Erreur lors de la soumission",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Erreur de connexion",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Cargar mi contenido
-  const loadMyContent = async () => {
-    const producerId = getProducerId();
-    
-    try {
-      const response = await fetch(`/api/content?producerId=${producerId}`);
-      const data = await response.json();
-      if (data.success) {
-        setMyContent(data.contents);
-      }
-    } catch (error) {
-      console.error('Error loading content:', error);
-    }
-  };
-
-  // Cargar contenido al montar
+  // Cargar contenido del localStorage
   useEffect(() => {
-    loadMyContent();
+    const savedContent = localStorage.getItem('lakaytv_producer_content');
+    if (savedContent) {
+      setContent(JSON.parse(savedContent));
+    } else {
+      setContent(initialProducerContent);
+      localStorage.setItem('lakaytv_producer_content', JSON.stringify(initialProducerContent));
+    }
   }, []);
+
+  // Guardar cambios
+  useEffect(() => {
+    if (content.length > 0) {
+      localStorage.setItem('lakaytv_producer_content', JSON.stringify(content));
+    }
+  }, [content]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const newContent: ProducerContent = {
+      id: `producer_${Date.now()}`,
+      title: formData.title,
+      youtubeId: formData.youtubeId,
+      type: formData.type,
+      status: 'pending',
+      views: 0,
+      revenue: 0,
+      submittedAt: new Date().toISOString().split('T')[0],
+      thumbnail: `https://img.youtube.com/vi/${formData.youtubeId}/hqdefault.jpg`,
+    };
+    
+    setContent([...content, newContent]);
+    setFormData({ title: '', youtubeId: '', type: 'FILM', description: '' });
+    setShowForm(false);
+  };
+
+  const stats = {
+    totalContent: content.length,
+    approved: content.filter(c => c.status === 'approved').length,
+    pending: content.filter(c => c.status === 'pending').length,
+    totalViews: content.reduce((sum, c) => sum + c.views, 0),
+    totalRevenue: content.reduce((sum, c) => sum + c.revenue, 0),
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return <Badge className="bg-green-600"><CheckIcon /> Approuve</Badge>;
+      case 'pending':
+        return <Badge className="bg-amber-600"><ClockIcon /> En attente</Badge>;
+      case 'rejected':
+        return <Badge className="bg-red-600">Refuse</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
-      <header className="border-b border-stone-800 bg-[#0a0a0a]/95 backdrop-blur sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 py-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 border-b border-stone-800">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <a href="/" className="flex items-center gap-2">
-                <img src="/logo.svg" alt="LakayTV" className="h-8 w-8" />
-                <span className="text-xl font-bold text-white">LakayTV</span>
-              </a>
-              <span className="text-stone-600">|</span>
-              <span className="text-amber-400 font-medium">Producteur</span>
+            <Link href="/" className="flex items-center gap-2">
+              <Button variant="ghost" className="text-white hover:text-amber-400">
+                <ArrowLeftIcon />
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2">
+              <img src="/logo.svg" alt="LakayTV" className="h-8 w-8" />
+              <span className="text-xl font-bold text-white">Espace Producteur</span>
             </div>
-            <Button
-              variant="ghost"
-              className="text-stone-400 hover:text-white"
-              onClick={() => router.push('/')}
-            >
-              <ArrowLeftIcon />
-              <span className="ml-2 hidden sm:inline">Retour</span>
-            </Button>
+            <div className="w-10" />
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        {/* Reglas */}
-        <Card className="bg-amber-900/20 border-amber-700/50 mb-8">
-          <CardContent className="p-6">
-            <h2 className="text-amber-400 font-bold mb-3 flex items-center gap-2">
-              <AlertIcon /> Regles importantes
-            </h2>
-            <ul className="text-stone-300 text-sm space-y-2">
-              <li>1. Seuls les liens YouTube sont acceptes</li>
-              <li>2. La qualite minimale est 1080p (Full HD)</li>
-              <li>3. Les contenus en 480p ou moins seront refuses</li>
-              <li>4. Le contenu sera visible apres validation par l&apos;administrateur</li>
-              <li>5. Langues acceptees: Creole et Francais</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* Formulario */}
-        <Card className="bg-stone-900/50 border-stone-800 mb-8">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <UploadIcon /> Ajouter un contenu
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Título */}
-              <div className="space-y-2">
-                <Label className="text-stone-300">Titre *</Label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Ex: ENSANSIB"
-                  className="bg-stone-800 border-stone-700 text-white"
-                  required
-                />
-              </div>
-
-              {/* Descripción */}
-              <div className="space-y-2">
-                <Label className="text-stone-300">Description</Label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Decrivez votre film ou serie..."
-                  className="bg-stone-800 border-stone-700 text-white min-h-[100px]"
-                />
-              </div>
-
-              {/* Fila: Tipo, Idioma, Año */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-stone-300">Type *</Label>
-                  <Select
-                    value={formData.type}
-                    onValueChange={(value) => setFormData({ ...formData, type: value })}
-                  >
-                    <SelectTrigger className="bg-stone-800 border-stone-700 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-stone-800 border-stone-700">
-                      <SelectItem value="MOVIE">Film</SelectItem>
-                      <SelectItem value="SERIES">Serie</SelectItem>
-                      <SelectItem value="TRAILER">Bande-annonce</SelectItem>
-                    </SelectContent>
-                  </Select>
+      <main className="pt-24 pb-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Welcome Banner */}
+          <Card className="bg-gradient-to-r from-amber-900/30 to-amber-800/20 border-amber-700/30 mb-8">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-white mb-2">
+                    Bienvenue, Producteur!
+                  </h1>
+                  <p className="text-stone-300">
+                    Soumettez vos films et series haitiens et gagnez de l&apos;argent avec votre contenu.
+                  </p>
                 </div>
-
-                <div className="space-y-2">
-                  <Label className="text-stone-300">Langue</Label>
-                  <Select
-                    value={formData.language}
-                    onValueChange={(value) => setFormData({ ...formData, language: value })}
-                  >
-                    <SelectTrigger className="bg-stone-800 border-stone-700 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-stone-800 border-stone-700">
-                      <SelectItem value="CREOLE">Creole</SelectItem>
-                      <SelectItem value="FRENCH">Francais</SelectItem>
-                      <SelectItem value="BOTH">Bilingue</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-stone-300">Annee</Label>
-                  <Input
-                    type="number"
-                    value={formData.releaseYear}
-                    onChange={(e) => setFormData({ ...formData, releaseYear: e.target.value })}
-                    placeholder="2024"
-                    className="bg-stone-800 border-stone-700 text-white"
-                  />
-                </div>
+                <Button 
+                  className="bg-amber-600 hover:bg-amber-700 text-white gap-2"
+                  onClick={() => setShowForm(true)}
+                >
+                  <UploadIcon /> Soumettre un Contenu
+                </Button>
               </div>
+            </CardContent>
+          </Card>
 
-              {/* URL YouTube */}
-              <div className="space-y-2">
-                <Label className="text-stone-300">URL YouTube *</Label>
-                <Input
-                  value={formData.youtubeUrl}
-                  onChange={(e) => handleYoutubeChange(e.target.value)}
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  className="bg-stone-800 border-stone-700 text-white"
-                  required
-                />
-                <p className="text-stone-500 text-xs">
-                  Format: youtube.com/watch?v=XXX ou youtu.be/XXX
-                </p>
-              </div>
-
-              {/* Preview */}
-              {previewUrl && (
-                <div className="space-y-2">
-                  <Label className="text-stone-300">Apercu</Label>
-                  <div className="relative aspect-video max-w-md rounded-lg overflow-hidden bg-stone-800">
-                    <img
-                      src={previewUrl}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <Card className="bg-stone-900 border-stone-800">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-600/20 rounded-lg">
+                    <FilmIcon />
+                  </div>
+                  <div>
+                    <p className="text-stone-400 text-sm">Contenu</p>
+                    <p className="text-2xl font-bold text-white">{stats.totalContent}</p>
                   </div>
                 </div>
-              )}
+              </CardContent>
+            </Card>
+            <Card className="bg-stone-900 border-stone-800">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-600/20 rounded-lg">
+                    <CheckIcon />
+                  </div>
+                  <div>
+                    <p className="text-stone-400 text-sm">Approuve</p>
+                    <p className="text-2xl font-bold text-white">{stats.approved}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-stone-900 border-stone-800">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-600/20 rounded-lg">
+                    <EyeIcon />
+                  </div>
+                  <div>
+                    <p className="text-stone-400 text-sm">Vues</p>
+                    <p className="text-2xl font-bold text-white">{stats.totalViews.toLocaleString()}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-stone-900 border-stone-800">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-600/20 rounded-lg">
+                    <DollarIcon />
+                  </div>
+                  <div>
+                    <p className="text-stone-400 text-sm">Revenus</p>
+                    <p className="text-2xl font-bold text-white">${stats.totalRevenue.toFixed(2)}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-stone-900 border-stone-800">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-600/20 rounded-lg">
+                    <ClockIcon />
+                  </div>
+                  <div>
+                    <p className="text-stone-400 text-sm">En Attente</p>
+                    <p className="text-2xl font-bold text-white">{stats.pending}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-              {/* Thumbnail personalizado */}
-              <div className="space-y-2">
-                <Label className="text-stone-300">Image personnalisee (optionnel)</Label>
-                <Input
-                  value={formData.thumbnailUrl}
-                  onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
-                  placeholder="https://... (laissez vide pour utiliser l'image YouTube)"
-                  className="bg-stone-800 border-stone-700 text-white"
-                />
-              </div>
-
-              {/* Submit */}
-              <Button
-                type="submit"
-                className="bg-amber-600 hover:bg-amber-700 text-white w-full"
-                disabled={loading}
-              >
-                {loading ? 'Envoi en cours...' : 'Soumettre pour validation'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Mi contenido */}
-        <Card className="bg-stone-900/50 border-stone-800">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <FilmIcon /> Mes contenus ({myContent.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {myContent.length === 0 ? (
-              <div className="text-center py-12 text-stone-500">
-                <FilmIcon />
-                <p className="mt-4">Aucun contenu soumis</p>
-                <p className="text-sm">Vos soumissions apparaitront ici</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {myContent.map((content) => (
-                  <div
-                    key={content.id}
-                    className="flex items-center gap-4 p-4 bg-stone-800/50 rounded-lg"
-                  >
-                    <div className="w-20 h-14 rounded bg-stone-700 overflow-hidden flex-shrink-0">
-                      {content.thumbnailUrl && (
-                        <img
-                          src={content.thumbnailUrl}
-                          alt={content.title}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
+          {/* Submit Form Modal */}
+          {showForm && (
+            <Card className="bg-stone-900 border-stone-800 mb-6">
+              <CardHeader>
+                <CardTitle className="text-white">Soumettre un Nouveau Contenu</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-stone-400 text-sm mb-1 block">Titre du contenu *</label>
+                      <input
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className="w-full bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-white"
+                        required
+                      />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-medium truncate">{content.title}</h3>
-                      <p className="text-stone-500 text-sm">
-                        {content.type} - {content.language}
+                    <div>
+                      <label className="text-stone-400 text-sm mb-1 block">YouTube Video ID *</label>
+                      <input
+                        type="text"
+                        value={formData.youtubeId}
+                        onChange={(e) => setFormData({ ...formData, youtubeId: e.target.value })}
+                        className="w-full bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-white"
+                        placeholder="Ex: JOcNyL5tUO4"
+                        required
+                      />
+                      <p className="text-stone-500 text-xs mt-1">
+                        L&apos;ID est la partie apres v= dans l&apos;URL YouTube
                       </p>
                     </div>
                     <div>
-                      {content.status === 'PENDING' && (
-                        <Badge className="bg-yellow-600">En attente</Badge>
-                      )}
-                      {content.status === 'APPROVED' && (
-                        <Badge className="bg-green-600">Approuve</Badge>
-                      )}
-                      {content.status === 'REJECTED' && (
-                        <Badge className="bg-red-600">Refuse</Badge>
-                      )}
+                      <label className="text-stone-400 text-sm mb-1 block">Type de contenu</label>
+                      <select
+                        value={formData.type}
+                        onChange={(e) => setFormData({ ...formData, type: e.target.value as 'FILM' | 'SERIE' })}
+                        className="w-full bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-white"
+                      >
+                        <option value="FILM">Film</option>
+                        <option value="SERIE">Serie / Feyton</option>
+                      </select>
                     </div>
                   </div>
-                ))}
+
+                  {/* Preview */}
+                  {formData.youtubeId && (
+                    <div className="p-4 bg-stone-800 rounded-lg">
+                      <p className="text-stone-400 text-sm mb-2">Apercu de la miniature:</p>
+                      <img
+                        src={`https://img.youtube.com/vi/${formData.youtubeId}/hqdefault.jpg`}
+                        alt="Preview"
+                        className="w-64 rounded"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <Button type="submit" className="bg-amber-600 hover:bg-amber-700 text-white">
+                      Soumettre pour Revision
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="border-stone-700 text-white"
+                      onClick={() => setShowForm(false)}
+                    >
+                      Annuler
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Content List */}
+          <h2 className="text-xl font-bold text-white mb-4">Mon Contenu</h2>
+          <div className="space-y-4">
+            {content.map((item) => (
+              <Card key={item.id} className="bg-stone-900 border-stone-800">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-4">
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="w-40 h-24 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-white font-semibold">{item.title}</h3>
+                        <Badge className={item.type === 'FILM' ? 'bg-blue-600' : 'bg-purple-600'}>
+                          {item.type === 'FILM' ? 'Film' : 'Serie'}
+                        </Badge>
+                        {getStatusBadge(item.status)}
+                      </div>
+                      <div className="flex items-center gap-4 text-stone-400 text-sm mb-2">
+                        <span className="flex items-center gap-1">
+                          <EyeIcon /> {item.views.toLocaleString()} vues
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <DollarIcon /> ${item.revenue.toFixed(2)}
+                        </span>
+                        <span>Soumis le {item.submittedAt}</span>
+                      </div>
+                    </div>
+                    <Link href={`/watch/${item.id}`}>
+                      <Button variant="outline" className="border-stone-700 text-white">
+                        Voir
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {content.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-stone-500 mb-4">Vous n&apos;avez pas encore soumis de contenu.</p>
+              <Button 
+                className="bg-amber-600 hover:bg-amber-700 text-white gap-2"
+                onClick={() => setShowForm(true)}
+              >
+                <PlusIcon /> Soumettre votre premier contenu
+              </Button>
+            </div>
+          )}
+
+          {/* Info Section */}
+          <Card className="bg-stone-900 border-stone-800 mt-8">
+            <CardHeader>
+              <CardTitle className="text-white">Comment ca marche?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-amber-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-amber-400">1</span>
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">Soumettez votre contenu</h3>
+                  <p className="text-stone-400 text-sm">
+                    Ajoutez le lien YouTube de votre film ou serie haitienne.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-amber-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-amber-400">2</span>
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">Revision</h3>
+                  <p className="text-stone-400 text-sm">
+                    Notre equipe verifie que le contenu respecte nos criteres.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-amber-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-amber-400">3</span>
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">Gagnez de l&apos;argent</h3>
+                  <p className="text-stone-400 text-sm">
+                    Recevez des revenus pour chaque vue de votre contenu.
+                  </p>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </main>
     </div>
   );

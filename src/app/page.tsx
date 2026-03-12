@@ -6,9 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// Nota: La autenticación con Clerk se habilita configurando las variables de entorno
-// Por ahora, mostramos botones simples que redirigen a las páginas de auth
-
 // ============ SVG ICONS ============
 const PlayIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -76,6 +73,13 @@ const TrophyIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
     <path d="M5 3h14a1 1 0 0 1 1 1v3a5 5 0 0 1-5 5h-1v3h3v2H7v-2h3v-3H9a5 5 0 0 1-5-5V4a1 1 0 0 1 1-1z"/>
     <path d="M5 3v3a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V3"/>
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+    <polyline points="12 5 19 12 12 19"/>
   </svg>
 );
 
@@ -418,6 +422,78 @@ const newReleases = [
 
 const genres = ["Tous", "Drame", "Horreur", "Action", "Romance", "Thriller", "Comedie", "Court-metrage"];
 
+// ============ WELCOME PAGE COMPONENT ============
+function WelcomePage({ onContinue }: { onContinue: () => void }) {
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-[#0a0a0a] to-purple-900/20" />
+      
+      {/* Content */}
+      <div className="relative z-10 max-w-2xl mx-auto text-center">
+        {/* Photo */}
+        <div className="mb-8 relative">
+          <div className="w-48 h-48 md:w-56 md:h-56 mx-auto rounded-full overflow-hidden border-4 border-amber-500 shadow-2xl shadow-amber-500/30">
+            <img 
+              src="https://res.cloudinary.com/dcclzhsim/image/upload/v1769986641/IMG_1484_h6oqhs.png" 
+              alt="Vertil Jivenson" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {/* Decorative ring */}
+          <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 mx-auto rounded-full border-2 border-amber-400/30 animate-pulse" />
+        </div>
+
+        {/* Name and Title */}
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+          Vertil Jivenson
+        </h1>
+        <p className="text-amber-400 text-lg mb-6">
+          Fondateur de LakayTV
+        </p>
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <Badge className="bg-blue-600 text-white">Haiti</Badge>
+          <Badge className="bg-amber-600 text-white">Cap-Haitien</Badge>
+        </div>
+
+        {/* Message */}
+        <div className="bg-stone-900/50 backdrop-blur-sm rounded-xl p-6 md:p-8 mb-8 border border-stone-700">
+          <p className="text-stone-300 text-lg leading-relaxed mb-4">
+            Je suis <span className="text-amber-400 font-semibold">Vertil Jivenson</span>, ne en Haiti, 
+            principalement au <span className="text-amber-400">Cap-Haitien, Petite Anse</span>.
+          </p>
+          <p className="text-stone-300 text-lg leading-relaxed mb-4">
+            Mon reve est d&apos;attirer ceux qui partagent le meme reve que moi : 
+            <span className="text-white font-semibold"> construire un pays technologique</span>, 
+            afin de donner un nouveau but aux jeunes qui sont fatigues d&apos;avoir un travail, 
+            fatigues de ne pas finir leurs etudes et devoir avoir un diplome pour trouver du travail 
+            dans un pays desordonne.
+          </p>
+          <p className="text-amber-300 text-lg leading-relaxed font-semibold">
+            Aujourd&apos;hui, avec la programmation, vous pouvez trouver du travail en tant qu&apos;autodidacte 
+            et gagner un revenu important. Unissez-vous a nous !
+          </p>
+        </div>
+
+        {/* Continue Button */}
+        <Button 
+          onClick={onContinue}
+          className="bg-amber-600 hover:bg-amber-500 text-white px-10 py-6 text-xl font-semibold rounded-full shadow-lg shadow-amber-600/30 transition-all hover:scale-105"
+        >
+          Continuer
+          <ArrowRightIcon />
+        </Button>
+
+        {/* Logo */}
+        <div className="mt-8 flex items-center justify-center gap-2">
+          <img src="/logo.svg" alt="LakayTV" className="h-8 w-8" />
+          <span className="text-xl font-bold text-white">LakayTV</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============ COMPONENTS ============
 interface ContentCardProps {
   content: typeof films[0] | typeof series[0] | typeof topRanking[0];
@@ -448,7 +524,7 @@ function ContentCard({ content, showRank = false, rank }: ContentCardProps) {
             <p className="text-white text-xs text-center line-clamp-2">{content.description}</p>
           </div>
         </div>
-        <div className="absolute top-2 left-2 flex gap-1">
+        <div className="absolute top-2 left-2">
           {showRank && rank && (
             <Badge className="bg-amber-500 text-black font-bold text-sm px-2">
               #{rank}
@@ -483,7 +559,7 @@ function ContentCard({ content, showRank = false, rank }: ContentCardProps) {
 }
 
 // ============ MAIN PAGE ============
-export default function Home() {
+function HomePage() {
   const [activeGenre, setActiveGenre] = useState("Tous");
 
   return (
@@ -797,4 +873,28 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+// ============ MAIN EXPORT ============
+export default function Home() {
+  const [showWelcome, setShowWelcome] = useState(true);
+
+  // Check if user has already seen the welcome page
+  if (typeof window !== 'undefined') {
+    const hasSeenWelcome = localStorage.getItem('lakaytv_welcome_seen');
+    if (hasSeenWelcome && showWelcome) {
+      setShowWelcome(false);
+    }
+  }
+
+  const handleContinue = () => {
+    localStorage.setItem('lakaytv_welcome_seen', 'true');
+    setShowWelcome(false);
+  };
+
+  if (showWelcome) {
+    return <WelcomePage onContinue={handleContinue} />;
+  }
+
+  return <HomePage />;
 }
