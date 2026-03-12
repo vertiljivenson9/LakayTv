@@ -22,16 +22,18 @@ export function NetflixIntro({ onComplete }: NetflixIntroProps) {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
-      {/* Video Intro - No controls, no skip, auto plays until end */}
-      <video
-        ref={videoRef}
-        src="/videos/intro.mp4"
-        autoPlay
-        playsInline
-        onEnded={handleVideoEnd}
-        onError={handleError}
-        className="w-full h-full object-cover"
-      />
+      {/* Intro Container - Centered, maintains aspect ratio without cropping */}
+      <div className="w-full max-w-4xl mx-auto aspect-video">
+        <video
+          ref={videoRef}
+          src="/videos/intro.mp4"
+          autoPlay
+          playsInline
+          onEnded={handleVideoEnd}
+          onError={handleError}
+          className="w-full h-full object-contain"
+        />
+      </div>
     </div>
   );
 }
