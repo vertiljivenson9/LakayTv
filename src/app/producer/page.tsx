@@ -1,8 +1,7 @@
 'use client'
 
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,12 +26,6 @@ const UploadIcon = () => (
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
     <polyline points="17 8 12 3 7 8"/>
     <line x1="12" y1="3" x2="12" y2="15"/>
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="20 6 9 17 4 12"/>
   </svg>
 );
 
@@ -63,8 +56,20 @@ interface Content {
   createdAt: string;
 }
 
+// Generar ID único para productor anónimo
+const getProducerId = () => {
+  if (typeof window !== 'undefined') {
+    let id = localStorage.getItem('lakaytv_producer_id');
+    if (!id) {
+      id = 'producer_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('lakaytv_producer_id', id);
+    }
+    return id;
+  }
+  return 'producer_anonymous';
+};
+
 export default function ProducerPage() {
-  const { isSignedIn, user, isLoaded } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -80,13 +85,6 @@ export default function ProducerPage() {
     duration: '',
     releaseYear: '',
   });
-
-  // Cargar contenido del productor
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.push('/sign-in');
-    }
-  }, [isLoaded, isSignedIn, router]);
 
   // Extraer preview de YouTube
   const handleYoutubeChange = (url: string) => {
@@ -122,12 +120,14 @@ export default function ProducerPage() {
     setLoading(true);
 
     try {
+      const producerId = getProducerId();
+      
       const response = await fetch('/api/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          producerId: user?.id,
+          producerId: producerId,
           duration: parseInt(formData.duration) || 0,
           releaseYear: parseInt(formData.releaseYear) || new Date().getFullYear(),
         }),
@@ -173,10 +173,10 @@ export default function ProducerPage() {
 
   // Cargar mi contenido
   const loadMyContent = async () => {
-    if (!user?.id) return;
-
+    const producerId = getProducerId();
+    
     try {
-      const response = await fetch(`/api/content?producerId=${user.id}`);
+      const response = await fetch(`/api/content?producerId=${producerId}`);
       const data = await response.json();
       if (data.success) {
         setMyContent(data.contents);
@@ -186,19 +186,10 @@ export default function ProducerPage() {
     }
   };
 
+  // Cargar contenido al montar
   useEffect(() => {
-    if (isSignedIn && user?.id) {
-      loadMyContent();
-    }
-  }, [isSignedIn, user?.id]);
-
-  if (!isLoaded || !isSignedIn) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-white">Chargement...</div>
-      </div>
-    );
-  }
+    loadMyContent();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">

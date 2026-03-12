@@ -18,21 +18,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Clerk provider condicional - solo usa Clerk si las variables están configuradas
-async function ClerkProviderWrapper({ children }: { children: React.ReactNode }) {
-  // Verificar si Clerk está configurado
-  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  
-  if (clerkKey && clerkKey.length > 10) {
-    // Clerk está configurado - usar provider real
-    const { ClerkProvider } = await import("@clerk/nextjs");
-    return <ClerkProvider>{children}</ClerkProvider>;
-  }
-  
-  // Clerk no está configurado - renderizar sin provider
-  return <>{children}</>;
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,9 +28,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <ClerkProviderWrapper>
-          {children}
-        </ClerkProviderWrapper>
+        {children}
         <Toaster />
       </body>
     </html>

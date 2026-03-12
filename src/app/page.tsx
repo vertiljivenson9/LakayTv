@@ -518,15 +518,15 @@ export default function Home() {
                 <SearchIcon />
               </button>
 
-              {/* Botones de autenticación - funcionalidad completa cuando Clerk esté configurado */}
-              <Link href="/sign-in">
-                <Button variant="ghost" className="text-stone-300 hover:text-white hover:bg-white/10">
-                  Connexion
+              {/* Enlaces a paneles */}
+              <Link href="/producer">
+                <Button variant="outline" className="border-stone-600 text-stone-300 hover:text-white hover:bg-white/10">
+                  Producteur
                 </Button>
               </Link>
-              <Link href="/sign-up">
+              <Link href="/admin">
                 <Button className="bg-amber-600 hover:bg-amber-700 text-white">
-                  S&apos;inscrire
+                  Admin
                 </Button>
               </Link>
 

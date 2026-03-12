@@ -1,8 +1,7 @@
 'use client'
 
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -65,7 +64,6 @@ interface Content {
 }
 
 export default function AdminPage() {
-  const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [pendingContent, setPendingContent] = useState<Content[]>([]);
@@ -74,12 +72,8 @@ export default function AdminPage() {
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.push('/sign-in');
-    } else if (isSignedIn) {
-      loadContent();
-    }
-  }, [isLoaded, isSignedIn, router]);
+    loadContent();
+  }, []);
 
   const loadContent = async () => {
     setLoading(true);
@@ -211,14 +205,6 @@ export default function AdminPage() {
     }
     return null;
   };
-
-  if (!isLoaded || !isSignedIn) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-white">Chargement...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
