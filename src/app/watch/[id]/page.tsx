@@ -1,12 +1,10 @@
 'use client'
 
-import { use, useState, useRef, useEffect } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-
-// Nota: La autenticación se habilita configurando Clerk con las variables de entorno
 
 // SVG Icons
 const HeartIcon = ({ filled = false }: { filled?: boolean }) => (
@@ -35,63 +33,6 @@ const ShareIcon = () => (
     <circle cx="18" cy="19" r="3"/>
     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-  </svg>
-);
-
-// Custom Player Icons
-const PlayIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-    <polygon points="5 3 19 12 5 21 5 3"/>
-  </svg>
-);
-
-const PauseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-    <rect x="6" y="4" width="4" height="16"/>
-    <rect x="14" y="4" width="4" height="16"/>
-  </svg>
-);
-
-const VolumeIcon = ({ muted = false }: { muted?: boolean }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-    {!muted && (
-      <g>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-      </g>
-    )}
-    {muted && (
-      <g>
-        <line x1="23" y1="9" x2="17" y2="15"/>
-        <line x1="17" y1="9" x2="23" y2="15"/>
-      </g>
-    )}
-  </svg>
-);
-
-const FullscreenIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="15 3 21 3 21 9"/>
-    <polyline points="9 21 3 21 3 15"/>
-    <line x1="21" y1="3" x2="14" y2="10"/>
-    <line x1="3" y1="21" x2="10" y2="14"/>
-  </svg>
-);
-
-const MinimizeIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="4 14 10 14 10 20"/>
-    <polyline points="20 10 14 10 14 4"/>
-    <line x1="14" y1="10" x2="21" y2="3"/>
-    <line x1="3" y1="21" x2="10" y2="14"/>
-  </svg>
-);
-
-const SettingsIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="3"/>
-    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
   </svg>
 );
 
@@ -154,86 +95,18 @@ const demoContent: Record<string, ContentData> = {
 export default function WatchPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
-  const playerRef = useRef<HTMLDivElement>(null);
   
-  // Player state
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(100);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState('0:00');
-  const [duration, setDuration] = useState('0:00');
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showControls, setShowControls] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   // Obtener contenido
   const content = resolvedParams.id ? demoContent[resolvedParams.id] : null;
+  const [isClient, setIsClient] = useState(false);
 
   // Redirigir si no existe
   useEffect(() => {
+    setIsClient(true);
     if (!content) {
       router.push('/');
     }
   }, [content, router]);
-
-  // Auto-hide controls
-  useEffect(() => {
-    if (showControls && isPlaying) {
-      controlsTimeoutRef.current = setTimeout(() => {
-        setShowControls(false);
-      }, 3000);
-    }
-    return () => {
-      if (controlsTimeoutRef.current) {
-        clearTimeout(controlsTimeoutRef.current);
-      }
-    };
-  }, [showControls, isPlaying]);
-
-  // Simulate progress updates (since we can't access YouTube iframe API directly)
-  useEffect(() => {
-    if (isPlaying) {
-      const interval = setInterval(() => {
-        setProgress(prev => Math.min(prev + 0.1, 100));
-      }, 100);
-      return () => clearInterval(interval);
-    }
-  }, [isPlaying]);
-
-  // Fullscreen handling
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
-
-  const toggleFullscreen = async () => {
-    if (!playerRef.current) return;
-    
-    if (!document.fullscreenElement) {
-      await playerRef.current.requestFullscreen();
-    } else {
-      await document.exitFullscreen();
-    }
-  };
-
-  const handleMouseMove = () => {
-    setShowControls(true);
-    if (controlsTimeoutRef.current) {
-      clearTimeout(controlsTimeoutRef.current);
-    }
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   if (!content) {
     return (
@@ -243,15 +116,8 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
     );
   }
 
-  // URL nativa de YouTube con parametros optimizados para experiencia nativa
-  // controls=0: Oculta controles de YouTube (usar overlay personalizado)
-  // modestbranding=1: Minimiza logo de YouTube
-  // rel=0: Sin videos relacionados al final
-  // autoplay=1: Reproduccion automatica
-  // mute=1: Silenciado para permitir autoplay en todos los navegadores
-  // playsinline=1: Reproduccion inline en iOS
-  // iv_load_policy=3: Oculta anotaciones
-  const youtubeEmbedUrl = `https://www.youtube.com/embed/${content.youtubeId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1&controls=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&color=white&theme=dark&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`;
+  // URL de YouTube con controles nativos
+  const youtubeEmbedUrl = `https://www.youtube.com/embed/${content.youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&color=white&theme=dark`;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -276,113 +142,18 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
         </div>
       </header>
 
-      {/* Video Player - Nativo con controles personalizados */}
+      {/* Video Player - YouTube nativo */}
       <div className="pt-16">
-        <div 
-          ref={playerRef}
-          className="video-player-wrapper relative w-full aspect-video bg-black max-h-[85vh] cursor-pointer"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => isPlaying && setShowControls(false)}
-        >
-          {/* YouTube iframe */}
-          <iframe
-            src={youtubeEmbedUrl}
-            title={content.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-            allowFullScreen
-            className="w-full h-full absolute inset-0"
-            onLoad={() => setIsLoading(false)}
-          />
-
-          {/* Loading spinner */}
-          {isLoading && (
-            <div className="video-loading-spinner" />
+        <div className="relative w-full aspect-video bg-black max-h-[85vh]">
+          {isClient && (
+            <iframe
+              src={youtubeEmbedUrl}
+              title={content.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              className="w-full h-full absolute inset-0"
+            />
           )}
-
-          {/* Title overlay - top */}
-          <div className={`video-title-overlay transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
-            <h2 className="text-white font-semibold text-lg">{content.title}</h2>
-          </div>
-
-          {/* Big play button in center */}
-          {!isPlaying && (
-            <div 
-              className="big-play-button"
-              onClick={() => setIsPlaying(true)}
-            >
-              <PlayIcon />
-            </div>
-          )}
-
-          {/* Custom controls overlay */}
-          <div className={`video-controls-overlay transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
-            {/* Progress bar */}
-            <div className="video-progress-bar mb-4">
-              <div className="video-progress-bar-fill" style={{ width: `${progress}%` }} />
-            </div>
-
-            {/* Controls row */}
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                {/* Play/Pause */}
-                <button 
-                  className="video-control-btn"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                >
-                  {isPlaying ? <PauseIcon /> : <PlayIcon />}
-                </button>
-
-                {/* Volume */}
-                <button 
-                  className="video-control-btn"
-                  onClick={() => setIsMuted(!isMuted)}
-                >
-                  <VolumeIcon muted={isMuted} />
-                </button>
-
-                {/* Volume slider */}
-                <div className="volume-slider flex items-center">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={isMuted ? 0 : volume}
-                    onChange={(e) => {
-                      setVolume(parseInt(e.target.value));
-                      setIsMuted(false);
-                    }}
-                    className="ml-2"
-                  />
-                </div>
-
-                {/* Time display */}
-                <span className="video-time-display ml-4">
-                  {currentTime} / {duration}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {/* Settings */}
-                <button className="video-control-btn">
-                  <SettingsIcon />
-                </button>
-
-                {/* Fullscreen */}
-                <button 
-                  className="video-control-btn"
-                  onClick={toggleFullscreen}
-                >
-                  {isFullscreen ? <MinimizeIcon /> : <FullscreenIcon />}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Click overlay for play/pause */}
-          <div 
-            className="click-overlay"
-            onClick={() => setIsPlaying(!isPlaying)}
-          />
         </div>
       </div>
 
@@ -428,7 +199,7 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
             </p>
 
             <div className="flex items-center gap-3 flex-wrap">
-              <Link href="/sign-in">
+              <Link href="/">
                 <Button className="bg-amber-600 hover:bg-amber-700 text-white gap-2">
                   <HeartIcon />
                   Ajouter a ma liste
@@ -444,7 +215,7 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
               <p className="text-amber-400 text-sm mb-3">
                 Connectez-vous pour ajouter ce contenu a votre liste et profiter de toutes les fonctionnalites.
               </p>
-              <Link href="/sign-in">
+              <Link href="/">
                 <Button className="bg-amber-600 hover:bg-amber-700 text-white">
                   Se connecter
                 </Button>
