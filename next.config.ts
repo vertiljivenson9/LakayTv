@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
         hostname: '*.ytimg.com',
       },
     ],
+    unoptimized: true,
   },
 };
 

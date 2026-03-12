@@ -121,6 +121,11 @@ export function Footer() {
                   Conditions d&apos;utilisation
                 </Link>
               </li>
+              <li>
+                <Link href="/developers" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Pour les Développeurs
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
