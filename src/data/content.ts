@@ -17,6 +17,19 @@ export interface Content {
 export const contents: Content[] = [
   {
     id: "1",
+    title: "Tonton Dezirab - Lang Long",
+    description: "Un film haïtien complet en créole 4K. Une histoire captivante qui vous transportera dans l'univers de la culture haïtienne authentique. Une production de qualité qui montre le talent des cinéastes haïtiens.",
+    thumbnail: "https://i.ytimg.com/vi/qqL1cfj9ZP4/hqdefault.jpg",
+    youtubeId: "qqL1cfj9ZP4",
+    year: 2025,
+    category: "movie",
+    genre: "Comédie",
+    duration: "1h 30min",
+    rating: "4.8/5",
+    featured: true,
+  },
+  {
+    id: "2",
     title: "Denye Kou",
     description: "Un film haïtien captivant qui explore les défis de la vie quotidienne en Haïti. Une histoire émouvante de résilience et d'espoir face aux épreuves de la vie.",
     thumbnail: "https://i.ytimg.com/vi/85xsbKThzr4/hqdefault.jpg",
