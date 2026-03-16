@@ -20,45 +20,74 @@ export function WatchClient({ id }: WatchClientProps) {
   const [showIntro, setShowIntro] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
   const [isWatched, setIsWatched] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   // Load user films from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("lakaytv_submitted_films");
-    if (saved) {
-      try {
-        const parsed: Content[] = JSON.parse(saved);
-        setUserFilms(parsed);
-      } catch (e) {
-        console.error("Error loading saved films:", e);
+    try {
+      const saved = localStorage.getItem("lakaytv_submitted_films");
+      if (saved) {
+        try {
+          const parsed: Content[] = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setUserFilms(parsed);
+          }
+        } catch (e) {
+          console.error("Error parsing saved films:", e);
+          localStorage.removeItem("lakaytv_submitted_films");
+        }
       }
-    }
 
-    // Check if already watched
-    const watchedContent = JSON.parse(localStorage.getItem("lakaytv_watched_content") || "[]");
-    setIsWatched(watchedContent.includes(id));
+      // Check if already watched
+      const watchedContent = JSON.parse(localStorage.getItem("lakaytv_watched_content") || "[]");
+      if (Array.isArray(watchedContent)) {
+        setIsWatched(watchedContent.includes(id));
+      }
+    } catch (e) {
+      console.error("Error accessing localStorage:", e);
+    }
+    
+    setMounted(true);
   }, [id]);
 
   // Combine content and find the film
   useEffect(() => {
-    const combined = [...userFilms, ...contents];
-    setAllContent(combined);
+    if (!mounted) return;
     
-    // First check user films, then static content
-    const userFilm = userFilms.find(f => f.id === id);
-    const staticFilm = getContentById(id);
-    setContent(userFilm || staticFilm || null);
-  }, [id, userFilms]);
+    try {
+      const combined = [...userFilms, ...contents];
+      setAllContent(combined);
+      
+      // First check user films, then static content
+      const userFilm = userFilms.find(f => f.id === id);
+      const staticFilm = getContentById(id);
+      
+      if (userFilm) {
+        setContent(userFilm);
+      } else if (staticFilm) {
+        setContent(staticFilm);
+      } else {
+        setContent(null);
+      }
+    } catch (e) {
+      console.error("Error finding content:", e);
+      setHasError(true);
+    }
+  }, [id, userFilms, mounted]);
 
   // Determine if we should show intro
   useEffect(() => {
-    if (content && !isWatched) {
+    if (!mounted || !content) return;
+    
+    if (!isWatched) {
       // Show intro only for new content
       setShowIntro(true);
     } else {
       // Directly show player for watched content
       setShowPlayer(true);
     }
-  }, [content, isWatched]);
+  }, [content, isWatched, mounted]);
 
   // Handle intro complete - show YouTube player
   const handleIntroComplete = () => {
@@ -67,11 +96,60 @@ export function WatchClient({ id }: WatchClientProps) {
     setIsWatched(true);
   };
 
+  // Loading state
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Erreur</h1>
+          <p className="text-gray-400 mb-4">
+            Une erreur s&apos;est produite lors du chargement du contenu.
+          </p>
+          <Link href="/">
+            <Button>Retour à l&apos;accueil</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (!content) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Vidéo non trouvée</h1>
+          <p className="text-gray-400 mb-4">
+            Cette vidéo n&apos;a pas été trouvée. Elle peut avoir été supprimée ou le lien est incorrect.
+          </p>
+          <Link href="/">
+            <Button>Retour à l&apos;accueil</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Validate content has required fields
+  if (!content.youtubeId) {
+    return (
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Vidéo invalide</h1>
+          <p className="text-gray-400 mb-4">
+            Les informations de cette vidéo sont incomplètes.
+          </p>
           <Link href="/">
             <Button>Retour à l&apos;accueil</Button>
           </Link>
@@ -134,17 +212,17 @@ export function WatchClient({ id }: WatchClientProps) {
               <div className="flex flex-wrap items-center gap-4 text-gray-400">
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span>{content.rating}</span>
+                  <span>{content.rating || "N/A"}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
-                  <span>{content.duration}</span>
+                  <span>{content.duration || "N/A"}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4" />
                   <span>{content.year}</span>
                 </div>
-                <span className="px-2 py-1 bg-dark-50 rounded text-sm">{content.genre}</span>
+                <span className="px-2 py-1 bg-dark-50 rounded text-sm">{content.genre || "N/A"}</span>
                 {isWatched && (
                   <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-sm">
                     ✓ Déjà vu
@@ -152,7 +230,7 @@ export function WatchClient({ id }: WatchClientProps) {
                 )}
               </div>
               <p className="text-gray-300 mt-4 leading-relaxed">
-                {content.description}
+                {content.description || "Aucune description disponible."}
               </p>
             </div>
           </div>
@@ -164,20 +242,23 @@ export function WatchClient({ id }: WatchClientProps) {
               {relatedContent.map((c) => (
                 <Link key={c.id} href={`/watch/${c.id}`} className="block group">
                   <div className="flex gap-3">
-                    <div className="relative w-40 aspect-video rounded overflow-hidden flex-shrink-0">
+                    <div className="relative w-40 aspect-video rounded overflow-hidden flex-shrink-0 bg-dark-50">
                       <Image
                         src={c.thumbnail}
                         alt={c.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-white text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
                         {c.title}
                       </h4>
-                      <p className="text-gray-500 text-xs mt-1">{c.genre}</p>
-                      <p className="text-gray-500 text-xs">{c.duration}</p>
+                      <p className="text-gray-500 text-xs mt-1">{c.genre || "N/A"}</p>
+                      <p className="text-gray-500 text-xs">{c.duration || "N/A"}</p>
                     </div>
                   </div>
                 </Link>
@@ -188,14 +269,16 @@ export function WatchClient({ id }: WatchClientProps) {
       </div>
 
       {/* More Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-xl font-bold text-white mb-6">Autres contenus</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {allContent.slice(6).map((c) => (
-            <ContentCard key={c.id} content={c} />
-          ))}
+      {allContent.length > 6 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h2 className="text-xl font-bold text-white mb-6">Autres contenus</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {allContent.slice(6).map((c) => (
+              <ContentCard key={c.id} content={c} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

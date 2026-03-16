@@ -1,11 +1,14 @@
-import { contents } from "@/data/content";
 import { FilmClient } from "@/components/FilmClient";
 
-// Generate static paths for all content
+// Enable dynamic rendering for user-added content
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
+// Generate static paths for known static content (optional optimization)
 export function generateStaticParams() {
-  return contents.map((content) => ({
-    id: content.id,
-  }));
+  // Return empty array to allow all dynamic routes
+  // Static content will still work because of the FilmClient logic
+  return [];
 }
 
 // Film Detail Page - Server Component

@@ -20,34 +20,62 @@ export function FilmClient({ id }: FilmClientProps) {
   const [content, setContent] = useState<Content | null>(null);
   const [allContent, setAllContent] = useState<Content[]>([]);
   const [isWatched, setIsWatched] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   // Load user films from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("lakaytv_submitted_films");
-    if (saved) {
-      try {
-        const parsed: Content[] = JSON.parse(saved);
-        setUserFilms(parsed);
-      } catch (e) {
-        console.error("Error loading saved films:", e);
+    try {
+      const saved = localStorage.getItem("lakaytv_submitted_films");
+      if (saved) {
+        try {
+          const parsed: Content[] = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setUserFilms(parsed);
+          }
+        } catch (e) {
+          console.error("Error parsing saved films:", e);
+          // Clear invalid data
+          localStorage.removeItem("lakaytv_submitted_films");
+        }
       }
-    }
 
-    // Check if already watched
-    const watchedContent = JSON.parse(localStorage.getItem("lakaytv_watched_content") || "[]");
-    setIsWatched(watchedContent.includes(id));
+      // Check if already watched
+      const watchedContent = JSON.parse(localStorage.getItem("lakaytv_watched_content") || "[]");
+      if (Array.isArray(watchedContent)) {
+        setIsWatched(watchedContent.includes(id));
+      }
+    } catch (e) {
+      console.error("Error accessing localStorage:", e);
+    }
+    
+    setMounted(true);
   }, [id]);
 
   // Combine content and find the film
   useEffect(() => {
-    const combined = [...userFilms, ...contents];
-    setAllContent(combined);
+    if (!mounted) return;
     
-    // First check user films, then static content
-    const userFilm = userFilms.find(f => f.id === id);
-    const staticFilm = getContentById(id);
-    setContent(userFilm || staticFilm || null);
-  }, [id, userFilms]);
+    try {
+      const combined = [...userFilms, ...contents];
+      setAllContent(combined);
+      
+      // First check user films, then static content
+      const userFilm = userFilms.find(f => f.id === id);
+      const staticFilm = getContentById(id);
+      
+      if (userFilm) {
+        setContent(userFilm);
+      } else if (staticFilm) {
+        setContent(staticFilm);
+      } else {
+        setContent(null);
+      }
+    } catch (e) {
+      console.error("Error finding content:", e);
+      setHasError(true);
+    }
+  }, [id, userFilms, mounted]);
 
   // Handle play button click - show intro first (only if not watched)
   const handlePlayClick = () => {
@@ -73,6 +101,35 @@ export function FilmClient({ id }: FilmClientProps) {
     setShowPlayer(false);
   };
 
+  // Loading state
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Erreur</h1>
+          <p className="text-gray-400 mb-4">
+            Une erreur s&apos;est produite lors du chargement du contenu.
+          </p>
+          <Link href="/">
+            <Button>Retour à l&apos;accueil</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (!content) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
@@ -80,6 +137,23 @@ export function FilmClient({ id }: FilmClientProps) {
           <h1 className="text-2xl font-bold text-white mb-4">Contenu non trouvé</h1>
           <p className="text-gray-400 mb-4">
             Ce film n&apos;a pas été trouvé. Il peut avoir été supprimé ou le lien est incorrect.
+          </p>
+          <Link href="/">
+            <Button>Retour à l&apos;accueil</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Validate content has required fields
+  if (!content.thumbnail || !content.title || !content.youtubeId) {
+    return (
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Contenu invalide</h1>
+          <p className="text-gray-400 mb-4">
+            Les informations de ce film sont incomplètes.
           </p>
           <Link href="/">
             <Button>Retour à l&apos;accueil</Button>
@@ -114,6 +188,10 @@ export function FilmClient({ id }: FilmClientProps) {
             fill
             className="object-cover opacity-30"
             priority
+            onError={(e) => {
+              // Hide broken image
+              e.currentTarget.style.display = 'none';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dark/80 to-dark" />
           <div className="absolute inset-0 bg-gradient-to-r from-dark via-dark/50 to-transparent" />
@@ -124,12 +202,16 @@ export function FilmClient({ id }: FilmClientProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Poster */}
             <div className="lg:col-span-1">
-              <div className="aspect-[2/3] rounded-lg overflow-hidden shadow-2xl relative group">
+              <div className="aspect-[2/3] rounded-lg overflow-hidden shadow-2xl relative group bg-dark-50">
                 <Image
                   src={content.thumbnail}
                   alt={content.title}
                   fill
                   className="object-cover"
+                  onError={(e) => {
+                    // Fallback for broken image
+                    e.currentTarget.src = '/logo.svg';
+                  }}
                 />
                 {/* Play overlay */}
                 <button
@@ -153,7 +235,7 @@ export function FilmClient({ id }: FilmClientProps) {
             {/* Details */}
             <div className="lg:col-span-2">
               {/* Category & Year */}
-              <div className="flex items-center space-x-3 mb-4">
+              <div className="flex items-center flex-wrap gap-3 mb-4">
                 <span className="px-3 py-1 text-sm font-medium bg-primary text-white rounded-full">
                   {content.category === "movie" ? "Film" : 
                    content.category === "series" ? "Série" :
@@ -176,11 +258,11 @@ export function FilmClient({ id }: FilmClientProps) {
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <div className="flex items-center space-x-1">
                   <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                  <span className="text-white font-medium">{content.rating}</span>
+                  <span className="text-white font-medium">{content.rating || "N/A"}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Clock className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-400">{content.duration}</span>
+                  <span className="text-gray-400">{content.duration || "N/A"}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4 text-gray-400" />
@@ -188,13 +270,13 @@ export function FilmClient({ id }: FilmClientProps) {
                 </div>
                 <div className="flex items-center space-x-1">
                   <Globe className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-400">{content.genre}</span>
+                  <span className="text-gray-400">{content.genre || "N/A"}</span>
                 </div>
               </div>
 
               {/* Description */}
               <p className="text-gray-300 text-lg mb-6 leading-relaxed">
-                {content.description}
+                {content.description || "Aucune description disponible."}
               </p>
 
               {/* Director */}
