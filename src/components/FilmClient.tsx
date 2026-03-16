@@ -19,6 +19,7 @@ export function FilmClient({ id }: FilmClientProps) {
   const [userFilms, setUserFilms] = useState<Content[]>([]);
   const [content, setContent] = useState<Content | null>(null);
   const [allContent, setAllContent] = useState<Content[]>([]);
+  const [isWatched, setIsWatched] = useState(false);
 
   // Load user films from localStorage
   useEffect(() => {
@@ -31,7 +32,11 @@ export function FilmClient({ id }: FilmClientProps) {
         console.error("Error loading saved films:", e);
       }
     }
-  }, []);
+
+    // Check if already watched
+    const watchedContent = JSON.parse(localStorage.getItem("lakaytv_watched_content") || "[]");
+    setIsWatched(watchedContent.includes(id));
+  }, [id]);
 
   // Combine content and find the film
   useEffect(() => {
@@ -44,15 +49,22 @@ export function FilmClient({ id }: FilmClientProps) {
     setContent(userFilm || staticFilm || null);
   }, [id, userFilms]);
 
-  // Handle play button click - show intro first
+  // Handle play button click - show intro first (only if not watched)
   const handlePlayClick = () => {
-    setShowIntro(true);
+    if (isWatched) {
+      // Already watched, go directly to player
+      setShowPlayer(true);
+    } else {
+      // First time watching, show intro
+      setShowIntro(true);
+    }
   };
 
   // Handle intro complete - show YouTube player
   const handleIntroComplete = () => {
     setShowIntro(false);
     setShowPlayer(true);
+    setIsWatched(true);
   };
 
   // Handle close player
@@ -129,6 +141,13 @@ export function FilmClient({ id }: FilmClientProps) {
                   </div>
                 </button>
               </div>
+              {/* Watched indicator */}
+              {isWatched && (
+                <div className="mt-2 text-center text-green-400 text-sm flex items-center justify-center gap-1">
+                  <User className="h-4 w-4" />
+                  Déjà vu
+                </div>
+              )}
             </div>
 
             {/* Details */}
@@ -141,6 +160,11 @@ export function FilmClient({ id }: FilmClientProps) {
                    content.category === "documentary" ? "Documentaire" : "Court-métrage"}
                 </span>
                 <span className="text-gray-400">{content.year}</span>
+                {isWatched && (
+                  <span className="px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded">
+                    ✓ Déjà vu
+                  </span>
+                )}
               </div>
 
               {/* Title */}
@@ -207,7 +231,7 @@ export function FilmClient({ id }: FilmClientProps) {
                   onClick={handlePlayClick}
                 >
                   <Play className="h-5 w-5 mr-2 fill-white" />
-                  Regarder maintenant
+                  {isWatched ? "Regarder à nouveau" : "Regarder maintenant"}
                 </Button>
                 <Link href={`/watch/${content.id}`}>
                   <Button size="lg" variant="outline" className="border-gray-600 text-white hover:bg-white/10">
@@ -220,9 +244,9 @@ export function FilmClient({ id }: FilmClientProps) {
         </div>
       </div>
 
-      {/* Netflix-Style Intro */}
+      {/* Netflix-Style Intro - Only shows for new content */}
       {showIntro && (
-        <NetflixIntro onComplete={handleIntroComplete} />
+        <NetflixIntro onComplete={handleIntroComplete} contentId={id} />
       )}
 
       {/* Embedded Player Modal */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { contents, Content } from "@/data/content";
 import { FeaturedContent } from "@/components/FeaturedContent";
 import { ContentCard } from "@/components/ContentCard";
@@ -91,9 +91,12 @@ function HorizontalScrollSection({
 export default function Home() {
   const [userFilms, setUserFilms] = useState<Content[]>([]);
   const [allContent, setAllContent] = useState<Content[]>([]);
+  const [mounted, setMounted] = useState(false);
 
-  // Load user films from localStorage on mount
-  useEffect(() => {
+  // Load user films from localStorage
+  const loadUserFilms = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    
     const saved = localStorage.getItem("lakaytv_submitted_films");
     if (saved) {
       try {
@@ -102,13 +105,55 @@ export default function Home() {
       } catch (e) {
         console.error("Error loading saved films:", e);
       }
+    } else {
+      setUserFilms([]);
     }
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    loadUserFilms();
+    setMounted(true);
+  }, [loadUserFilms]);
+
+  // Listen for storage changes (from other tabs/windows)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "lakaytv_submitted_films") {
+        loadUserFilms();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [loadUserFilms]);
+
+  // Custom event for same-tab updates
+  useEffect(() => {
+    const handleCustomUpdate = () => {
+      loadUserFilms();
+    };
+
+    window.addEventListener('lakaytv_content_updated', handleCustomUpdate);
+    return () => window.removeEventListener('lakaytv_content_updated', handleCustomUpdate);
+  }, [loadUserFilms]);
 
   // Combine all content
   useEffect(() => {
     setAllContent([...userFilms, ...contents]);
   }, [userFilms]);
+
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   const featured = allContent.filter(c => c.featured);
   const movies = allContent.filter(c => c.category === "movie");
@@ -126,7 +171,7 @@ export default function Home() {
         {userFilms.length > 0 && (
           <div className="pt-4">
             <HorizontalScrollSection 
-              title="Mes Films Soumis" 
+              title="🎬 Mes Films Ajoutés" 
               contents={userFilms} 
             />
           </div>

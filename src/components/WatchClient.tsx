@@ -17,8 +17,9 @@ export function WatchClient({ id }: WatchClientProps) {
   const [userFilms, setUserFilms] = useState<Content[]>([]);
   const [content, setContent] = useState<Content | null>(null);
   const [allContent, setAllContent] = useState<Content[]>([]);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [isWatched, setIsWatched] = useState(false);
 
   // Load user films from localStorage
   useEffect(() => {
@@ -31,7 +32,11 @@ export function WatchClient({ id }: WatchClientProps) {
         console.error("Error loading saved films:", e);
       }
     }
-  }, []);
+
+    // Check if already watched
+    const watchedContent = JSON.parse(localStorage.getItem("lakaytv_watched_content") || "[]");
+    setIsWatched(watchedContent.includes(id));
+  }, [id]);
 
   // Combine content and find the film
   useEffect(() => {
@@ -44,10 +49,22 @@ export function WatchClient({ id }: WatchClientProps) {
     setContent(userFilm || staticFilm || null);
   }, [id, userFilms]);
 
+  // Determine if we should show intro
+  useEffect(() => {
+    if (content && !isWatched) {
+      // Show intro only for new content
+      setShowIntro(true);
+    } else {
+      // Directly show player for watched content
+      setShowPlayer(true);
+    }
+  }, [content, isWatched]);
+
   // Handle intro complete - show YouTube player
   const handleIntroComplete = () => {
     setShowIntro(false);
     setShowPlayer(true);
+    setIsWatched(true);
   };
 
   if (!content) {
@@ -70,9 +87,9 @@ export function WatchClient({ id }: WatchClientProps) {
 
   return (
     <div className="min-h-screen bg-dark pt-16">
-      {/* Netflix-Style Intro */}
+      {/* Netflix-Style Intro - Only shows for new content */}
       {showIntro && (
-        <NetflixIntro onComplete={handleIntroComplete} />
+        <NetflixIntro onComplete={handleIntroComplete} contentId={id} />
       )}
 
       {/* Back Button */}
@@ -128,6 +145,11 @@ export function WatchClient({ id }: WatchClientProps) {
                   <span>{content.year}</span>
                 </div>
                 <span className="px-2 py-1 bg-dark-50 rounded text-sm">{content.genre}</span>
+                {isWatched && (
+                  <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-sm">
+                    ✓ Déjà vu
+                  </span>
+                )}
               </div>
               <p className="text-gray-300 mt-4 leading-relaxed">
                 {content.description}

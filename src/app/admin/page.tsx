@@ -117,6 +117,9 @@ export default function AdminPage() {
     setUserFilms(updatedFilms);
     localStorage.setItem("lakaytv_submitted_films", JSON.stringify(updatedFilms));
     
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('lakaytv_content_updated'));
+    
     // Reset form
     setFormData({
       title: "",
@@ -138,6 +141,9 @@ export default function AdminPage() {
     const updatedFilms = userFilms.filter(f => f.id !== id);
     setUserFilms(updatedFilms);
     localStorage.setItem("lakaytv_submitted_films", JSON.stringify(updatedFilms));
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('lakaytv_content_updated'));
   };
 
   // Combine all content
