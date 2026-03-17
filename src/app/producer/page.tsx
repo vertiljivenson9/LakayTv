@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
   ArrowLeft, Plus, Film, DollarSign, Eye, TrendingUp,
   Upload, BarChart3, Settings, MessageSquare, Image as ImageIcon, 
-  AlertTriangle, CheckCircle, Trash2
+  AlertTriangle, CheckCircle, Trash2, X, Mail, Bell, User, Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,6 +68,23 @@ export default function ProducerPage() {
     thumbnail: string;
   } | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // Modal states
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  
+  // Ref for scrolling to films section
+  const filmsSectionRef = useRef<HTMLDivElement>(null);
+  
+  // Settings state
+  const [producerSettings, setProducerSettings] = useState({
+    name: "",
+    email: "",
+    bio: "",
+    website: "",
+    notifications: true,
+  });
 
   // Load submitted films from localStorage on mount
   useEffect(() => {
@@ -77,6 +94,16 @@ export default function ProducerPage() {
         setSubmittedFilms(JSON.parse(saved));
       } catch (e) {
         console.error("Error loading saved films:", e);
+      }
+    }
+    
+    // Load producer settings
+    const savedSettings = localStorage.getItem("lakaytv_producer_settings");
+    if (savedSettings) {
+      try {
+        setProducerSettings(JSON.parse(savedSettings));
+      } catch (e) {
+        console.error("Error loading settings:", e);
       }
     }
   }, []);
@@ -156,12 +183,28 @@ export default function ProducerPage() {
     window.dispatchEvent(new CustomEvent('lakaytv_content_updated'));
   };
 
+  const handleSaveSettings = () => {
+    localStorage.setItem("lakaytv_producer_settings", JSON.stringify(producerSettings));
+    setShowSettings(false);
+  };
+
+  const scrollToFilms = () => {
+    filmsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const stats = {
     films: submittedFilms.length,
-    views: 12500,
-    revenue: 1250,
-    rating: 4.5,
+    views: submittedFilms.length > 0 ? submittedFilms.length * 2500 + 5000 : 12500,
+    revenue: submittedFilms.length > 0 ? submittedFilms.length * 350 + 500 : 1250,
+    rating: submittedFilms.length > 0 ? 4.5 + (submittedFilms.length * 0.1) : 4.5,
   };
+
+  // Mock messages data
+  const messages = [
+    { id: 1, from: "LakayTV Support", subject: "Bienvenue sur LakayTV!", date: "2024-01-15", read: false },
+    { id: 2, from: "Équipe Marketing", subject: "Votre film est en vedette!", date: "2024-01-14", read: true },
+    { id: 3, from: "Fan Haïti", subject: "J'ai adoré votre dernier film", date: "2024-01-13", read: true },
+  ];
 
   return (
     <div className="min-h-screen bg-dark pt-20 pb-12">
@@ -258,7 +301,7 @@ export default function ProducerPage() {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm">Note Moyenne</p>
-                  <p className="text-2xl font-bold text-white">{stats.rating}/5</p>
+                  <p className="text-2xl font-bold text-white">{stats.rating.toFixed(1)}/5</p>
                 </div>
               </div>
             </CardContent>
@@ -413,7 +456,7 @@ export default function ProducerPage() {
           <div className="space-y-6">
             {/* My Submitted Films */}
             {submittedFilms.length > 0 && (
-              <Card className="bg-dark-50 border-gray-800">
+              <Card ref={filmsSectionRef} className="bg-dark-50 border-gray-800">
                 <CardHeader>
                   <CardTitle className="text-white text-lg flex items-center">
                     <Film className="h-5 w-5 mr-2 text-primary" />
@@ -484,25 +527,41 @@ export default function ProducerPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
+            {/* Quick Actions - WITH FUNCTIONALITY */}
             <Card className="bg-dark-50 border-gray-800">
               <CardHeader>
                 <CardTitle className="text-white text-lg">Actions rapides</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="border-gray-700 text-white hover:bg-dark">
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700 text-white hover:bg-dark"
+                  onClick={() => setShowAnalytics(true)}
+                >
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Analytique
                 </Button>
-                <Button variant="outline" className="border-gray-700 text-white hover:bg-dark">
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700 text-white hover:bg-dark"
+                  onClick={scrollToFilms}
+                >
                   <Film className="h-4 w-4 mr-2" />
                   Mes Films
                 </Button>
-                <Button variant="outline" className="border-gray-700 text-white hover:bg-dark">
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700 text-white hover:bg-dark"
+                  onClick={() => setShowMessages(true)}
+                >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Messages
                 </Button>
-                <Button variant="outline" className="border-gray-700 text-white hover:bg-dark">
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700 text-white hover:bg-dark"
+                  onClick={() => setShowSettings(true)}
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Paramètres
                 </Button>
@@ -534,6 +593,223 @@ export default function ProducerPage() {
           </div>
         </div>
       </div>
+
+      {/* Analytics Modal */}
+      {showAnalytics && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <Card className="bg-dark-50 border-gray-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-white flex items-center">
+                <BarChart3 className="h-5 w-5 mr-2 text-primary" />
+                Analytique
+              </CardTitle>
+              <button onClick={() => setShowAnalytics(false)} className="text-gray-400 hover:text-white">
+                <X className="h-5 w-5" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Chart placeholder */}
+                <div className="bg-dark rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-4">Vues cette semaine</h4>
+                  <div className="flex items-end space-x-2 h-32">
+                    {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
+                      <div key={i} className="flex-1 flex flex-col items-center">
+                        <div 
+                          className="w-full bg-primary rounded-t transition-all"
+                          style={{ height: `${height}%` }}
+                        />
+                        <span className="text-gray-500 text-xs mt-1">
+                          {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][i]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-dark rounded-lg p-4">
+                    <p className="text-gray-400 text-sm">Vues totales</p>
+                    <p className="text-2xl font-bold text-white">{stats.views.toLocaleString()}</p>
+                    <p className="text-green-400 text-sm">+12% cette semaine</p>
+                  </div>
+                  <div className="bg-dark rounded-lg p-4">
+                    <p className="text-gray-400 text-sm">Temps de visionnage</p>
+                    <p className="text-2xl font-bold text-white">{Math.floor(stats.views / 60)}h</p>
+                    <p className="text-green-400 text-sm">+8% cette semaine</p>
+                  </div>
+                  <div className="bg-dark rounded-lg p-4">
+                    <p className="text-gray-400 text-sm">Nouveaux abonnés</p>
+                    <p className="text-2xl font-bold text-white">{Math.floor(stats.views / 100)}</p>
+                    <p className="text-green-400 text-sm">+15% cette semaine</p>
+                  </div>
+                  <div className="bg-dark rounded-lg p-4">
+                    <p className="text-gray-400 text-sm">Taux d&apos;engagement</p>
+                    <p className="text-2xl font-bold text-white">4.2%</p>
+                    <p className="text-yellow-400 text-sm">-2% cette semaine</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Messages Modal */}
+      {showMessages && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <Card className="bg-dark-50 border-gray-800 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-white flex items-center">
+                <MessageSquare className="h-5 w-5 mr-2 text-primary" />
+                Messages
+              </CardTitle>
+              <button onClick={() => setShowMessages(false)} className="text-gray-400 hover:text-white">
+                <X className="h-5 w-5" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {messages.map((msg) => (
+                  <div 
+                    key={msg.id} 
+                    className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                      msg.read ? 'bg-dark' : 'bg-dark border-l-2 border-primary'
+                    } hover:bg-dark-80`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2">
+                        {!msg.read && <Bell className="h-4 w-4 text-primary" />}
+                        <span className="text-white font-medium text-sm">{msg.from}</span>
+                      </div>
+                      <span className="text-gray-500 text-xs">{msg.date}</span>
+                    </div>
+                    <p className="text-gray-300 text-sm mt-1">{msg.subject}</p>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Compose Message */}
+              <div className="mt-6 pt-4 border-t border-gray-700">
+                <h4 className="text-white font-medium mb-3">Contacter le support</h4>
+                <Input
+                  placeholder="Votre message..."
+                  className="bg-dark border-gray-700 text-white mb-2"
+                />
+                <Button className="w-full bg-primary hover:bg-primary-600">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Envoyer
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <Card className="bg-dark-50 border-gray-800 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-white flex items-center">
+                <Settings className="h-5 w-5 mr-2 text-primary" />
+                Paramètres
+              </CardTitle>
+              <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-white">
+                <X className="h-5 w-5" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Profile Settings */}
+                <div>
+                  <h4 className="text-white font-medium mb-3 flex items-center">
+                    <User className="h-4 w-4 mr-2" />
+                    Profil
+                  </h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-gray-400 text-sm mb-1 block">Nom</label>
+                      <Input
+                        placeholder="Votre nom"
+                        value={producerSettings.name}
+                        onChange={(e) => setProducerSettings({...producerSettings, name: e.target.value})}
+                        className="bg-dark border-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm mb-1 block">Email</label>
+                      <Input
+                        type="email"
+                        placeholder="votre@email.com"
+                        value={producerSettings.email}
+                        onChange={(e) => setProducerSettings({...producerSettings, email: e.target.value})}
+                        className="bg-dark border-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm mb-1 block">Bio</label>
+                      <textarea
+                        placeholder="Parlez-nous de vous..."
+                        value={producerSettings.bio}
+                        onChange={(e) => setProducerSettings({...producerSettings, bio: e.target.value})}
+                        className="w-full h-20 px-3 py-2 bg-dark border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-sm mb-1 block flex items-center">
+                        <Globe className="h-4 w-4 mr-1" />
+                        Site web
+                      </label>
+                      <Input
+                        type="url"
+                        placeholder="https://votre-site.com"
+                        value={producerSettings.website}
+                        onChange={(e) => setProducerSettings({...producerSettings, website: e.target.value})}
+                        className="bg-dark border-gray-700 text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notification Settings */}
+                <div className="pt-4 border-t border-gray-700">
+                  <h4 className="text-white font-medium mb-3 flex items-center">
+                    <Bell className="h-4 w-4 mr-2" />
+                    Notifications
+                  </h4>
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <span className="text-gray-300">Notifications par email</span>
+                    <div 
+                      className={`w-12 h-6 rounded-full transition-colors ${
+                        producerSettings.notifications ? 'bg-primary' : 'bg-gray-600'
+                      }`}
+                      onClick={() => setProducerSettings({
+                        ...producerSettings, 
+                        notifications: !producerSettings.notifications
+                      })}
+                    >
+                      <div className={`w-5 h-5 rounded-full bg-white shadow transform transition-transform ${
+                        producerSettings.notifications ? 'translate-x-6' : 'translate-x-1'
+                      } mt-0.5`} />
+                    </div>
+                  </label>
+                </div>
+
+                {/* Save Button */}
+                <Button 
+                  className="w-full bg-primary hover:bg-primary-600 mt-4"
+                  onClick={handleSaveSettings}
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Sauvegarder
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
